@@ -1,5 +1,5 @@
 {
-  "spider": "./Spiders-Lib/jar/GM.jar",
+  "spider": "https://ghp.ci/https://raw.githubusercontent.com/CatVodSpider-GM/Spiders-Lib/main/jar/GM.jar",
   "sites": [
     {
       "key": "Jable",
