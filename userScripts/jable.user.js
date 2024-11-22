@@ -21,8 +21,7 @@ console.log(JSON.stringify(GM_info));
     Object.freeze(GMSpiderArgs);
     const GmSpider = (function () {
         function listVideos(result) {
-            result.total = parseInt($(".content-header .title-box .inactive-color").text());
-            result.pagecount = Math.ceil(result.total / result.limit);
+            result.pagecount = parseInt($(".pagination .page-item:last").text());
             $("[id^='list_videos_'] .row:first .video-img-box").each(function (i) {
                 const subTitle = $(this).find(".sub-title").text().split('\n');
                 const remarks = [
@@ -35,7 +34,7 @@ console.log(JSON.stringify(GM_info));
                     vod_name: $(this).find(".title").text(),
                     vod_pic: $(this).find(".img-box img").data("src"),
                     vod_remarks: remarks.join(" "),
-                    vod_year: $(this).find(".absolute-bottom-right").text()
+                    vod_year: $(this).find(".absolute-bottom-right").text().trim()
                 })
             });
             return result;
@@ -43,7 +42,7 @@ console.log(JSON.stringify(GM_info));
 
         return {
             homeContent: function (filter) {
-                const result = {
+                let result = {
                     class: [
                         {type_id: "latest-updates", type_name: "最近更新"},
                         {type_id: "new-release", type_name: "全新上市"},
@@ -96,29 +95,29 @@ console.log(JSON.stringify(GM_info));
                             ]
                         }]
                     },
-                    list: [],
-                    parse: 0,
-                    jx: 0
+                    list: []
                 };
-                $(".jable-animate .owl-item:not(.cloned) a").each(function () {
-                    const url = new URL($(this).attr("href"));
-                    result.list.push({
-                        vod_id: url.pathname.split('/').at(2).toUpperCase(),
-                        vod_name: url.pathname.split('/').at(2).toUpperCase(),
-                        vod_pic: $(this).find("img").data("src")
-                    })
+                let itemList = [];
+                $(".video-img-box").has(".detail").has("img").each(function () {
+                    const url = new URL($(this).find(".img-box a").attr("href"));
+                    if (url.hostname === "jable.tv") {
+                        itemList.push({
+                            vod_id: url.pathname.split('/').at(2).toUpperCase(),
+                            vod_name: $(this).find(".title").text(),
+                            vod_pic: $(this).find("img").data("src"),
+                            vod_year: $(this).find(".absolute-bottom-right").text().trim()
+                        })
+                    }
                 });
-                console.log(JSON.stringify(result));
+                result.list = itemList.filter((item, index) => {
+                    return itemList.findIndex(i => i.vod_id === item.vod_id) === index
+                });
                 return result;
             },
             categoryContent: function (tid, pg, filter, extend) {
-                console.log(tid, pg, filter, JSON.stringify(extend));
                 let result = {
                     list: [],
-                    limit: 24,
-                    total: 0,
-                    page: pg,
-                    pagecount: 0
+                    pagecount: 1
                 };
                 if (tid === "categories") {
                     $("#list_categories_video_categories_list .video-img-box").each(function () {
@@ -152,7 +151,6 @@ console.log(JSON.stringify(GM_info));
                 } else {
                     listVideos(result);
                 }
-                console.log(JSON.stringify(result));
                 return result;
             },
             detailContent: function (ids) {
@@ -186,19 +184,14 @@ console.log(JSON.stringify(GM_info));
                     vod_play_from: $(".video-info .info-header .header-right h6").children().remove().end().text().trim(),
                     vod_play_url: "1080P$" + unsafeWindow.hlsUrl,
                 };
-                console.log(JSON.stringify({list: [vod]}))
                 return {list: [vod]};
             },
             searchContent: function (key, quick, pg) {
                 const result = {
                     list: [],
-                    limit: 24,
-                    total: 0,
-                    page: pg,
-                    pagecount: 0
+                    pagecount: 1
                 };
                 listVideos(result);
-                console.log(JSON.stringify(result));
                 return result;
             }
         };

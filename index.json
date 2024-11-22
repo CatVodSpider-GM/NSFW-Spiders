@@ -150,6 +150,55 @@
           }
         }
       }
+    },
+    {
+      "key": "supjav",
+      "name": "Supjav",
+      "type": 3,
+      "searchable": 1,
+      "changeable": 0,
+      "style": {
+        "type": "rect",
+        "ratio": 1.48
+      },
+      "api": "csp_GM",
+      "ext": {
+        "userScript": "./userScripts/supjav.user.js",
+        "debug": false,
+        "webViewSettings": {
+          "blockNetworkImage": true,
+          "blockList": [
+            "https://*.tapioni.com/*",
+            "https://*.fanza.cc/*",
+            "https://*.mnaspm.com/*",
+            "https://*.sacdnssedge.com/*",
+            "https://*.bbrdbr.com/*",
+            "https://*.googletagmanager.com/*",
+            "https://endowmentoverhangutmost.com/*",
+            "https://*.google-analytics.com/*",
+            "https://*.adxadserv.com/*",
+            "https://*.yandex.ru/*",
+            "https://*.recombee.com/*"
+          ]
+        },
+        "spider": {
+          "homeContent": {
+            "loadUrl": "https://supjav.com/zh/popular"
+          },
+          "categoryContent": {
+            "loadUrl": "https://supjav.com/zh/${tid}/page/${pg:-1}?sort=${sort:-quantity}"
+          },
+          "detailContent": {
+            "loadUrl": "https://supjav.com/zh/${id}",
+            "playUrlMatch": [
+              "https://*.turboviplay.com/*.m3u8"
+            ]
+          },
+          "searchContent": {
+            "loadUrl": "https://supjav.com/zh/page/${pg:-1}?s=${key}"
+          }
+        }
+      }
     }
   ]
 }
