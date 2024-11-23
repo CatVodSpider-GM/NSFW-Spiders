@@ -51,8 +51,8 @@
       }
     },
     {
-      "key": "nJAV",
-      "name": "nJAV",
+      "key": "123av",
+      "name": "123AV",
       "type": 3,
       "searchable": 1,
       "changeable": 0,
@@ -62,7 +62,7 @@
       },
       "api": "csp_GM",
       "ext": {
-        "userScript": "./userScripts/njav.user.js",
+        "userScript": "./userScripts/123av.user.js",
         "debug": false,
         "webViewSettings": {
           "blockNetworkImage": true,
@@ -82,19 +82,19 @@
         },
         "spider": {
           "homeContent": {
-            "loadUrl": "https://njav.tv/zh/"
+            "loadUrl": "https://123av.com/zh/"
           },
           "categoryContent": {
-            "loadUrl": "https://njav.tv/zh/${tid}?page=${pg:-1}${filter:-}${sort:-}"
+            "loadUrl": "https://123av.com/zh/${tid}?page=${pg:-1}${filter:-}${sort:-}"
           },
           "detailContent": {
-            "loadUrl": "https://njav.tv/zh/v/${id}"
+            "loadUrl": "https://123av.com/zh/v/${id}"
           },
           "playerContent": {
             "loadUrl": "${id}"
           },
           "searchContent": {
-            "loadUrl": "https://njav.tv/zh/search?keyword=${key}&page=${pg:-1}"
+            "loadUrl": "https://123av.com/zh/search?keyword=${key}&page=${pg:-1}"
           }
         }
       }

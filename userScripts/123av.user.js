@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         nJAV
 // @namespace    gmspider
-// @version      2024.11.12
+// @version      2024.11.23
 // @description  nJAV GMSpider
 // @author       Luomo
-// @match        https://njav.tv/*
+// @match        https://123av.com/*
 // @match        https://javplayer.me/*
 // @require      https://cdn.jsdelivr.net/gh/CatVodSpider-GM/Spiders-Lib@main/lib/jquery-2.2.4.min.js
 // @require      https://cdn.jsdelivr.net/gh/CatVodSpider-GM/Spiders-Lib@main/lib/jquery-observe-3.0.0.min.js
