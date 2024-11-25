@@ -47,7 +47,7 @@ console.log(JSON.stringify(GM_info));
                 name: "排序方式",
                 value: [
                     {
-                        n: "发型日期",
+                        n: "发行日期",
                         v: "&sort=released_at"
                     },
                     {

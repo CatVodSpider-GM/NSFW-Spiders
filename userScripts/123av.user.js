@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         nJAV
+// @name         123av
 // @namespace    gmspider
-// @version      2024.11.23
-// @description  nJAV GMSpider
+// @version      2024.11.25
+// @description  123av GMSpider
 // @author       Luomo
 // @match        https://123av.com/*
 // @match        https://javplayer.me/*
@@ -17,8 +17,8 @@ console.log(JSON.stringify(GM_info));
         GMSpiderArgs.fName = args.shift();
         GMSpiderArgs.fArgs = args;
     } else {
-        GMSpiderArgs.fName = "homeContent";
-        GMSpiderArgs.fArgs = [true];
+        GMSpiderArgs.fName = "categoryContent";
+        GMSpiderArgs.fArgs = ["recent-update"];
     }
     Object.freeze(GMSpiderArgs);
     const GmSpider = (function () {
@@ -78,17 +78,16 @@ console.log(JSON.stringify(GM_info));
             }];
 
         function pageList(result) {
-            result.total = parseInt($("#page-list .section-title .text-muted").text().replace(",", ""));
-            result.pagecount = Math.ceil(result.total / result.limit);
+            let itemList = [];
             $("#page-list .box-item-list .box-item").each(function (i) {
-                result.list.push({
+                itemList.push({
                     vod_id: getIdFromHref($(this).find(".thumb a").attr("href")),
                     vod_name: $(this).find(".detail a").text(),
                     vod_pic: $(this).find(".thumb img").data("src"),
                     vod_year: $(this).find(".duration").text()
                 })
             });
-            return result;
+            return itemList;
         }
 
         function getIdFromHref(href) {
@@ -129,26 +128,8 @@ console.log(JSON.stringify(GM_info));
                         "vr": defaultFilter,
                         "genres": defaultFilter
                     },
-                    list: [],
-                    parse: 0,
-                    jx: 0
+                    list: []
                 };
-                const canonical = $("head link[rel=canonical]").attr("href");
-                const base = $("head base").attr('href');
-                if (canonical.includes(base)) {
-                    let urlPrefix = canonical.replace(base, "");
-                    urlPrefix = urlPrefix.endsWith("/") ? urlPrefix : urlPrefix + "/";
-                    result.class.forEach((item) => {
-                        if (item.type_id !== "genres") {
-                            const modifiedTypeId = urlPrefix + item.type_id;
-                            if (result.filters.hasOwnProperty(item.type_id)) {
-                                result.filters[modifiedTypeId] = result.filters[item.type_id];
-                                delete result.filters[item.type_id]
-                            }
-                            item.type_id = urlPrefix + item.type_id;
-                        }
-                    })
-                }
                 $("#top-carousel .box-item-list .box-item:not(.splide__slide--clone)").each(function () {
                     result.list.push({
                         vod_id: getIdFromHref($(this).find("a").attr("href")),
@@ -160,10 +141,8 @@ console.log(JSON.stringify(GM_info));
             },
             categoryContent: function (tid, pg, filter, extend) {
                 console.log(tid, pg, filter, JSON.stringify(extend));
-                const result = {
+                let result = {
                     list: [],
-                    limit: 12,
-                    total: 0,
                     page: pg,
                     pagecount: 0
                 };
@@ -182,7 +161,8 @@ console.log(JSON.stringify(GM_info));
                     });
                     result.pagecount = 1;
                 } else {
-                    pageList(result);
+                    result.list = pageList();
+                    result.pagecount = Math.ceil(parseInt($("#page-list .section-title .text-muted").text().replace(",", "")) / 12);
                 }
                 return result;
             },
@@ -230,12 +210,12 @@ console.log(JSON.stringify(GM_info));
             searchContent: function (key, quick, pg) {
                 const result = {
                     list: [],
-                    limit: 12,
-                    total: 0,
                     page: pg,
                     pagecount: 0
                 };
-                return pageList(result);
+                result.list = pageList();
+                result.pagecount = Math.ceil(parseInt($("#page-list .section-title .text-muted").text().replace(",", "")) / 12);
+                return result;
             }
         };
     })();
