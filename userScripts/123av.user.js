@@ -191,7 +191,7 @@ console.log(JSON.stringify(GM_info));
                     vod_director: formatDetail(detail, "制作者", "标签"),
                     vod_actor: formatDetail(detail, "演员"),
                     vod_content: $(".justify-content-between.align-items-start h1").text().trim(),
-                    vod_play_from: "nJAV",
+                    vod_play_from: "123AV",
                     vod_play_url: "720P$" + playUrl,
                 };
                 return {list: [vod]};
