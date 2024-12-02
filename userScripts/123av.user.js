@@ -6,8 +6,7 @@
 // @author       Luomo
 // @match        https://123av.com/*
 // @match        https://javplayer.me/*
-// @require      https://cdn.jsdelivr.net/gh/CatVodSpider-GM/Spiders-Lib@main/lib/jquery-2.2.4.min.js
-// @require      https://cdn.jsdelivr.net/gh/CatVodSpider-GM/Spiders-Lib@main/lib/jquery-observe-3.0.0.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js
 // ==/UserScript==
 console.log(JSON.stringify(GM_info));
 (function () {
@@ -191,21 +190,20 @@ console.log(JSON.stringify(GM_info));
                     vod_director: formatDetail(detail, "制作者", "标签"),
                     vod_actor: formatDetail(detail, "演员"),
                     vod_content: $(".justify-content-between.align-items-start h1").text().trim(),
-                    vod_play_from: "123AV",
-                    vod_play_url: "720P$" + playUrl,
+                    vod_play_data: [{
+                        from: "123AV",
+                        url: [{
+                            name: "720P",
+                            value: {
+                                type: "match",
+                                data: {
+                                    url: playUrl
+                                }
+                            }
+                        }]
+                    }]
                 };
                 return {list: [vod]};
-            },
-            playerContent: function (flag, id, vipFlags) {
-                console.log(flag, id, vipFlags);
-                const playUrl = eval($("#player").attr("v-scope"));
-                return {
-                    header: JSON.stringify({
-                        "User-Agent": window.navigator.userAgent,
-                        "Referer": "https://javplayer.me/"
-                    }),
-                    url: playUrl
-                };
             },
             searchContent: function (key, quick, pg) {
                 const result = {

@@ -76,10 +76,12 @@
             "https://*.googletagmanager.com/*",
             "https://*.recombee.com/*",
             "https://*.google-analytics.com/*",
-            "https://njav.tv/recomm/items/*",
-            "https://javplayer.me/assets/media/dist/app.js*"
+            "https://njav.tv/recomm/items/*"
           ]
         },
+        "playUrlMatch": [
+          "https://*.skyearth.xyz/*/v.m3u8"
+        ],
         "spider": {
           "homeContent": {
             "loadUrl": "https://123av.com/zh/"
@@ -89,9 +91,6 @@
           },
           "detailContent": {
             "loadUrl": "https://123av.com/zh/v/${id}"
-          },
-          "playerContent": {
-            "loadUrl": "${id}"
           },
           "searchContent": {
             "loadUrl": "https://123av.com/zh/search?keyword=${key}&page=${pg:-1}"
@@ -178,9 +177,21 @@
             "https://*.google-analytics.com/*",
             "https://*.adxadserv.com/*",
             "https://*.yandex.ru/*",
-            "https://*.recombee.com/*"
+            "https://*.recombee.com/*",
+            "https://*.adforcast.com/*"
           ]
         },
+        "playUrlMatch": [
+          "https://*.cdn-centaurus.com/*/master.m3u8*",
+          "https://*.cloudatacdn.com/*",
+          "https://*.cloudflarestorage.com/*",
+          "https://*.linkofnyz.com/*.m3u8*",
+          "https://*.tapecontent.net/*",
+          "https://*.turboviplay.com/*.m3u8",
+          "https://*.voe-network.net/*/master.m3u8*",
+          "https://dood.la/pass_md5/*",
+          "https://streamtape.com/get_video*"
+        ],
         "spider": {
           "homeContent": {
             "loadUrl": "https://supjav.com/zh/popular"
@@ -189,10 +200,10 @@
             "loadUrl": "https://supjav.com/zh/${tid}/page/${pg:-1}?sort=${sort:-quantity}"
           },
           "detailContent": {
-            "loadUrl": "https://supjav.com/zh/${id}",
-            "playUrlMatch": [
-              "https://*.turboviplay.com/*.m3u8"
-            ]
+            "loadUrl": "https://supjav.com/zh/${id}"
+          },
+          "playerContent": {
+            "loadUrl": "https://supjav.com/zh/${pathname}#${link}"
           },
           "searchContent": {
             "loadUrl": "https://supjav.com/zh/page/${pg:-1}?s=${key}"

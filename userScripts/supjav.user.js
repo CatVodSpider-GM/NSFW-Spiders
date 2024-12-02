@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name         Supjav
 // @namespace    gmspider
-// @version      2024.11.21
+// @version      2024.12.02
 // @description  Supjav GMSpider
 // @author       Luomo
 // @match        https://supjav.com/*
-// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js
 // ==/UserScript==
 console.log(JSON.stringify(GM_info));
 (function () {
@@ -134,21 +134,66 @@ console.log(JSON.stringify(GM_info));
                     const name = $(this).text().trim();
                     tags.push(`[a=cr:{"id":"${id}","name":"${name}"}/]#${name}[/a]`);
                 });
+                let vodContent = $(".post-meta .img").attr("alt").trim();
+                let vodName = vodContent.replace("[无码破解]", '');
+                let match = vodName.match(/^[\w|-]+/g);
+                if (match) {
+                    if (match[0].includes("-")) {
+                        vodName = match[0];
+                    } else {
+                        match = vodContent.match(/^[\w]+\s[\w]+/g);
+                        if (match) {
+                            vodName = match[0].replace(" ", "-");
+                        }
+                    }
+                }
+                let playUrl = [];
+                let btnServers;
+                if ($(".video-wrap .cd-server").length > 0) {
+                    btnServers = $(".video-wrap .cd-server:first .btn-server");
+                } else {
+                    btnServers = $(".video-wrap .btn-server");
 
+                }
+                btnServers.each(function () {
+                    playUrl.push({
+                        name: $(this).text().trim(),
+                        value: {
+                            type: "webview",
+                            data: {
+                                replace: {
+                                    pathname: ids[0],
+                                    link: $(this).data("link")
+                                }
+                            }
+                        }
+                    })
+                })
                 const result = {
                     list: [{
                         vod_id: ids[0],
-                        vod_name: $(".post-meta .img").attr("alt"),
+                        vod_name: vodName,
                         vod_pic: $(".post-meta .img").attr("src"),
                         vod_actor: vodActor.join(" "),
                         vod_remarks: tags.join(" "),
-                        vod_content: $(".post-meta .img").attr("alt"),
-                        vod_play_from: "Supjav",
-                        vod_play_url: "1080P$@{playUrl}",
+                        vod_content: vodContent,
+                        vod_play_data: [{
+                            from: "Supjav",
+                            url: playUrl
+                        }]
                     }]
                 };
-                console.log(result);
                 return result
+            },
+            playerContent: function (flag, id, vipFlags) {
+                let link = window.location.hash.split("#").at(1);
+                document.querySelector(`.video-wrap .btn-server[data-link='${link}']`).dispatchEvent(new Event("click"));
+                return {
+                    type: "match",
+                    data: {
+                        url: link
+                    }
+                };
             },
             searchContent: function (key, quick, pg) {
                 const result = {
@@ -163,7 +208,7 @@ console.log(JSON.stringify(GM_info));
             }
         };
     })();
-    $(window).load(function () {
+    $(unsafeWindow).on("load", function () {
         const result = GmSpider[GMSpiderArgs.fName](...GMSpiderArgs.fArgs);
         console.log(result);
         if (typeof GmSpiderInject !== 'undefined') {
