@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         MissAV
 // @namespace    gmspider
-// @version      2024.11.12
+// @version      2024.12.03
 // @description  MissAV GMSpider
 // @author       Luomo
 // @match        https://missav.com/*
-// @require      https://cdn.jsdelivr.net/gh/CatVodSpider-GM/Spiders-Lib@main/lib/jquery-2.2.4.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js
+// @grant        unsafeWindow
 // ==/UserScript==
 console.log(JSON.stringify(GM_info));
 (function () {
@@ -15,7 +16,7 @@ console.log(JSON.stringify(GM_info));
         GMSpiderArgs.fName = args.shift();
         GMSpiderArgs.fArgs = args;
     } else {
-        GMSpiderArgs.fName = "homeContent";
+        GMSpiderArgs.fName = "detailContent";
         GMSpiderArgs.fArgs = [true];
     }
     Object.freeze(GMSpiderArgs);
@@ -128,6 +129,8 @@ console.log(JSON.stringify(GM_info));
                 let result = {
                     class: [
                         {type_id: "new", type_name: "所有影片"},
+                        {type_id: "madou", type_name: "麻豆传媒"},
+                        {type_id: "chinese-subtitle", type_name: "中文字幕"},
                         {type_id: "uncensored-leak", type_name: "无码流出"},
                         {type_id: "actresses/ranking", type_name: "热门女优"},
                         {type_id: "makers", type_name: "发行商"},
@@ -135,14 +138,14 @@ console.log(JSON.stringify(GM_info));
                     ],
                     filters: {
                         "new": defaultFilter,
+                        "madou": defaultFilter,
+                        "chinese-subtitle": defaultFilter,
                         "uncensored-leak": defaultFilter,
                         "actresses/ranking": defaultFilter,
                         "makers": defaultFilter,
                         "genres": defaultFilter
                     },
-                    list: [],
-                    parse: 0,
-                    jx: 0
+                    list: []
                 };
                 $(".gap-5:eq(5) .thumbnail").each(function () {
                     result.list.push({
@@ -224,6 +227,8 @@ console.log(JSON.stringify(GM_info));
                         })
                     }
                 });
+
+                console.log($('a.items-center:contains("显示更多")'));
                 const vod = {
                     vod_id: ids[0],
                     vod_name: ids[0].toUpperCase(),
@@ -231,7 +236,7 @@ console.log(JSON.stringify(GM_info));
                     vod_year: $("#space-y-2 time").text(),
                     vod_remarks: formatDetail(detail, "类型"),
                     vod_actor: formatDetail(detail, "女优"),
-                    vod_content: $("head meta[name=description]").attr("content"),
+                    vod_content: $('a.items-center:contains("显示更多")').length > 0 ? $("head meta[name=description]").attr("content") : $("head meta[property='og:title']").attr("content"),
                     vod_play_from: "MissAV",
                     vod_play_url: "多视轨$" + hls.url,
                 };

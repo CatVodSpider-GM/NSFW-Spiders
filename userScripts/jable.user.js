@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         Jable
 // @namespace    gmspider
-// @version      2024.11.12
+// @version      2024.12.03
 // @description  Jable GMSpider
 // @author       Luomo
 // @match        https://jable.tv/*
-// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js
+// @grant        unsafeWindow
 // ==/UserScript==
 console.log(JSON.stringify(GM_info));
 (function () {
@@ -45,8 +46,9 @@ console.log(JSON.stringify(GM_info));
                 let result = {
                     class: [
                         {type_id: "latest-updates", type_name: "最近更新"},
-                        {type_id: "new-release", type_name: "全新上市"},
                         {type_id: "hot", type_name: "热门影片"},
+                        {type_id: "categories/chinese-subtitle", type_name: "中文字幕"},
+                        {type_id: "new-release", type_name: "全新上市"},
                         {type_id: "categories", type_name: "主题&标签"},
                     ],
                     filters: {
@@ -69,6 +71,28 @@ console.log(JSON.stringify(GM_info));
                                 {
                                     n: "今日热门",
                                     v: "&sort_by=video_viewed_today"
+                                }
+                            ]
+                        }],
+                        "categories/chinese-subtitle": [{
+                            key: "sort_by",
+                            name: "时间",
+                            value: [
+                                {
+                                    n: "近期最佳",
+                                    v: "&sort_by=post_date_and_popularity"
+                                },
+                                {
+                                    n: "最近更新",
+                                    v: "&sort_by=post_date"
+                                },
+                                {
+                                    n: "最多观看",
+                                    v: "&sort_by=video_viewed"
+                                },
+                                {
+                                    n: "最高收藏",
+                                    v: "&sort_by=most_favourited"
                                 }
                             ]
                         }],

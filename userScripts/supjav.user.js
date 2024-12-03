@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         Supjav
 // @namespace    gmspider
-// @version      2024.12.02
+// @version      2024.12.03
 // @description  Supjav GMSpider
 // @author       Luomo
 // @match        https://supjav.com/*
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.slim.min.js
+// @grant        unsafeWindow
 // ==/UserScript==
 console.log(JSON.stringify(GM_info));
 (function () {
