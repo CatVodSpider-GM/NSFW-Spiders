@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NETFLAV
 // @namespace    gmspider
-// @version      2024.12.11
+// @version      2025.10.25
 // @description  NETFLAV GMSpider
 // @author       Luomo
 // @match        https://netflav.com/*
@@ -218,7 +218,7 @@ if (typeof unsafeWindow.gmSpiderRunning === "undefined") {
                         vod_id: video.videoId,
                         vod_name: video.code,
                         vod_pic: video.preview_hp,
-                        vod_year: video.videoDate.substring(0, 10),
+                        vod_year: (video.videoDate && typeof video.videoDate.substring === 'function') ? video.videoDate.substring(0, 10) : '',
                         vod_remarks: tags.join(" "),
                         vod_actor: vodActor.join(" "),
                         vod_content: video.description,
