@@ -1,5 +1,5 @@
 {
-  "spider": "./Spiders-Lib/GM.jar;md5;39d49277ae5b482e6283f59f89143f46",
+  "spider": "./Spiders-Lib/GM.jar;md5;a36831ed798998bbf38bb5862c32f96d",
   "sites": [
     {
       "key": "Jable",
@@ -216,7 +216,7 @@
     },
     {
       "key": "supjav",
-      "name": "Supjav",
+      "name": "SupJav",
       "type": 3,
       "quickSearch": 1,
       "searchable": 1,
@@ -232,7 +232,7 @@
         "userScript": "./userScripts/supjav.user.js",
         "debug": false,
         "webViewSettings": {
-          "blockNetworkImage": false,
+          "blockNetworkImage": true,
           "blockList": [
             "https://*.adforcast.com/*",
             "https://*.adxadserv.com/*",

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Supjav
 // @namespace    gmspider
-// @version      2024.12.03
+// @version      2025.11.12
 // @description  Supjav GMSpider
 // @author       Luomo
 // @match        https://supjav.com/*
@@ -227,10 +227,16 @@ console.log(JSON.stringify(GM_info));
             }
         };
     })();
+    $(document).ready(function () {
+        if ($(".loading-verifying").length > 0) {
+            GmSpiderInject.ShowWebview();
+        }
+    });
     $(unsafeWindow).on("load", function () {
         const result = GmSpider[GMSpiderArgs.fName](...GMSpiderArgs.fArgs);
         console.log(result);
         if (typeof GmSpiderInject !== 'undefined') {
+            GmSpiderInject.HideWebview();
             GmSpiderInject.SetSpiderResult(JSON.stringify(result));
         }
     });
