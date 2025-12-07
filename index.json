@@ -218,7 +218,7 @@
       "key": "supjav",
       "name": "SupJav",
       "type": 3,
-      "quickSearch": 1,
+      "quickSearch": 0,
       "searchable": 1,
       "changeable": 0,
       "filterable": 1,
