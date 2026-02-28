@@ -54,58 +54,6 @@
       }
     },
     {
-      "key": "netflav",
-      "name": "NETFLAV",
-      "type": 3,
-      "quickSearch": 1,
-      "searchable": 1,
-      "changeable": 0,
-      "filterable": 1,
-      "timeout": 60,
-      "style": {
-        "type": "rect",
-        "ratio": 1.48
-      },
-      "api": "csp_GM",
-      "ext": {
-        "userScript": "./userScripts/netflav.user.js",
-        "debug": false,
-        "webViewSettings": {
-          "blockNetworkImage": true,
-          "blockList": [
-            "*.png",
-            "*.css",
-            "*.woff2",
-            "https://*.googletagmanager.com/*",
-            "https://*.imkirh.com/*",
-            "https://*.xlvirdr.com/*"
-          ]
-        },
-        "playUrlMatch": [
-          "https://*/*/master.m3u8*",
-          "https://*/*/v.mp4",
-          "https://*/*/playlist.m3u8*"
-        ],
-        "spider": {
-          "homeContent": {
-            "loadUrl": "https://netflav.com/trending"
-          },
-          "categoryContent": {
-            "loadUrl": "https://netflav.com/${tid}&page=${pg:-1}${range:-}"
-          },
-          "detailContent": {
-            "loadUrl": "https://netflav.com/video?id=${id}/"
-          },
-          "playerContent": {
-            "loadUrl": "https://netflav.com/video?id=${vod_id}#${src}"
-          },
-          "searchContent": {
-            "loadUrl": "https://netflav.com/search?keyword=${key}&page=${pg:-1}&type=title"
-          }
-        }
-      }
-    },
-    {
       "key": "123av",
       "name": "123AV",
       "type": 3,
@@ -242,6 +190,7 @@
             "https://*.googletagmanager.com/*",
             "https://*.mnaspm.com/*",
             "https://*.recombee.com/*",
+            "https://*.saawsedge.com/*",
             "https://*.sacdnssedge.com/*",
             "https://*.tapioni.com/*",
             "https://*.yandex.ru/*",
@@ -326,6 +275,58 @@
           },
           "searchContent": {
             "loadUrl": "https://xojav.tv/search/${key}/?mode=async&function=get_block&sort_by=most_relevant&from_videos=${pg:-1}"
+          }
+        }
+      }
+    },
+    {
+      "key": "netflav",
+      "name": "NETFLAV",
+      "type": 3,
+      "quickSearch": 0,
+      "searchable": 1,
+      "changeable": 0,
+      "filterable": 1,
+      "timeout": 60,
+      "style": {
+        "type": "rect",
+        "ratio": 1.48
+      },
+      "api": "csp_GM",
+      "ext": {
+        "userScript": "./userScripts/netflav.user.js",
+        "debug": false,
+        "webViewSettings": {
+          "blockNetworkImage": true,
+          "blockList": [
+            "*.png",
+            "*.css",
+            "*.woff2",
+            "https://*.googletagmanager.com/*",
+            "https://*.imkirh.com/*",
+            "https://*.xlvirdr.com/*"
+          ]
+        },
+        "playUrlMatch": [
+          "https://*/*/master.m3u8*",
+          "https://*/*/v.mp4",
+          "https://*/*/playlist.m3u8*"
+        ],
+        "spider": {
+          "homeContent": {
+            "loadUrl": "https://netflav.com/trending"
+          },
+          "categoryContent": {
+            "loadUrl": "https://netflav.com/${tid}&page=${pg:-1}${range:-}"
+          },
+          "detailContent": {
+            "loadUrl": "https://netflav.com/video?id=${id}/"
+          },
+          "playerContent": {
+            "loadUrl": "https://netflav.com/video?id=${vod_id}#${src}"
+          },
+          "searchContent": {
+            "loadUrl": "https://netflav.com/search?keyword=${key}&page=${pg:-1}&type=title"
           }
         }
       }
