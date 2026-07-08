@@ -54,6 +54,57 @@
       }
     },
     {
+      "key": "AVPorner",
+      "name": "🆕AVPorner",
+      "type": 3,
+      "quickSearch": 1,
+      "searchable": 1,
+      "changeable": 0,
+      "filterable": 1,
+      "timeout": 60,
+      "style": {
+        "type": "rect",
+        "ratio": 1.78
+      },
+      "api": "csp_GM",
+      "ext": {
+        "userScript": "./userScripts/avporner.user.js",
+        "debug": false,
+        "webViewSettings": {
+          "blockNetworkImage": true,
+          "blockList": [
+            "*.css*",
+            "*.woff2*",
+            "https://avporner.com/themes/lite/*",
+            "*.googletagmanager.com/*",
+            "*.google-analytics.com/*",
+            "*.cloudflareinsights.com/*",
+            "*.magsrv.com/*",
+            "*adsco.re*",
+            "*.intelligenceadx.com/*",
+            "*.yandex.ru/*",
+            "*.imasdk.googleapis.com/*",
+            "*.hornyhill.st/*",
+            "*.carbonfeverthink.com/*"
+          ]
+        },
+        "spider": {
+          "homeContent": {
+            "loadUrl": "https://avporner.com/"
+          },
+          "categoryContent": {
+            "loadUrl": "https://avporner.com/${tid}?page_id=${pg:-1}${time:-}"
+          },
+          "detailContent": {
+            "loadUrl": "https://avporner.com/watch/${id}.html"
+          },
+          "searchContent": {
+            "loadUrl": "https://avporner.com/search?keyword=${key}"
+          }
+        }
+      }
+    },
+    {
       "key": "123av",
       "name": "123AV",
       "type": 3,
@@ -163,8 +214,143 @@
       }
     },
     {
+      "key": "XOJAV",
+      "name": "XOJAV",
+      "type": 3,
+      "quickSearch": 1,
+      "searchable": 1,
+      "changeable": 0,
+      "filterable": 1,
+      "timeout": 60,
+      "style": {
+        "type": "rect",
+        "ratio": 1.78
+      },
+      "api": "csp_GM",
+      "ext": {
+        "userScript": "./userScripts/xojav.user.js",
+        "debug": false,
+        "webViewSettings": {
+          "blockNetworkImage": true,
+          "blockList": [
+            "*.css*",
+            "*.ico*",
+            "*.png*",
+            "*.svg",
+            "https://*.googleapis.com/*",
+            "https://*.googletagmanager.com/*",
+            "https://*.magsrv.com/*",
+            "https://*.pemsrv.com/*"
+          ]
+        },
+        "spider": {
+          "homeContent": {
+            "loadUrl": "https://xojav.tv/?lang=zh"
+          },
+          "categoryContent": {
+            "loadUrl": "https://xojav.tv/${tid}${sort_by:-}&mode=async&function=get_block&from=${pg:-1}"
+          },
+          "detailContent": {
+            "loadUrl": "https://xojav.tv/videos/${id}"
+          },
+          "searchContent": {
+            "loadUrl": "https://xojav.tv/search/${key}/?mode=async&function=get_block&sort_by=most_relevant&from_videos=${pg:-1}"
+          }
+        }
+      }
+    },
+    {
+      "key": "Javtiful",
+      "name": "🆕Javtiful",
+      "type": 3,
+      "quickSearch": 1,
+      "searchable": 1,
+      "changeable": 0,
+      "filterable": 1,
+      "timeout": 60,
+      "style": {
+        "type": "rect",
+        "ratio": 1.78
+      },
+      "api": "csp_GM",
+      "ext": {
+        "userScript": "./userScripts/javtiful.user.js",
+        "debug": false,
+        "webViewSettings": {
+          "blockNetworkImage": true,
+          "blockList": [
+            "*.css*",
+            "*.googletagmanager.com/*",
+            "*.tsyndicate.com/*",
+            "*.woff2*",
+            "https://chaseherbalpasty.com/*",
+            "https://holahupa.com/*",
+            "https://holahupa.com/*",
+            "https://playhubconnect.com/*"
+          ]
+        },
+        "spider": {
+          "homeContent": {
+            "loadUrl": "https://javtiful.com/zh/main"
+          },
+          "categoryContent": {
+            "loadUrl": "https://javtiful.com/zh/${tid}?sort=${sort:-}&page=${pg:-1}"
+          },
+          "detailContent": {
+            "loadUrl": "https://javtiful.com/zh/video/${id}"
+          },
+          "searchContent": {
+            "loadUrl": "https://javtiful.com/zh/search?q=${key}&page=${pg:-1}"
+          }
+        }
+      }
+    },
+    {
+      "key": "JAVGG",
+      "name": "🆕🔧JAVGG",
+      "type": 3,
+      "quickSearch": 1,
+      "searchable": 1,
+      "changeable": 0,
+      "filterable": 1,
+      "timeout": 60,
+      "style": {
+        "type": "rect",
+        "ratio": 1.49
+      },
+      "api": "csp_GM",
+      "ext": {
+        "userScript": "./userScripts/javgg.user.js",
+        "debug": false,
+        "webViewSettings": {
+          "blockNetworkImage": true,
+          "blockList": [
+            "*.css*",
+            "*.woff2*",
+            "*.googletagmanager.com/*",
+            "*.google-analytics.com/*",
+            "*.cloudflareinsights.com/*"
+          ]
+        },
+        "spider": {
+          "homeContent": {
+            "loadUrl": "https://javgg.net/"
+          },
+          "categoryContent": {
+            "loadUrl": "https://javgg.net/${tid}/page/${pg:-1}/"
+          },
+          "detailContent": {
+            "loadUrl": "https://javgg.net/jav/${id}/"
+          },
+          "searchContent": {
+            "loadUrl": "https://javgg.net/?s=${key}&page=${pg:-1}"
+          }
+        }
+      }
+    },
+    {
       "key": "supjav",
-      "name": "SupJav",
+      "name": "⛔SupJav",
       "type": 3,
       "quickSearch": 0,
       "searchable": 1,
@@ -234,54 +420,8 @@
       }
     },
     {
-      "key": "XOJAV",
-      "name": "XOJAV",
-      "type": 3,
-      "quickSearch": 1,
-      "searchable": 1,
-      "changeable": 0,
-      "filterable": 1,
-      "timeout": 60,
-      "style": {
-        "type": "rect",
-        "ratio": 1.78
-      },
-      "api": "csp_GM",
-      "ext": {
-        "userScript": "./userScripts/xojav.user.js",
-        "debug": false,
-        "webViewSettings": {
-          "blockNetworkImage": true,
-          "blockList": [
-            "*.css*",
-            "*.ico*",
-            "*.png*",
-            "*.svg",
-            "https://*.googleapis.com/*",
-            "https://*.googletagmanager.com/*",
-            "https://*.magsrv.com/*",
-            "https://*.pemsrv.com/*"
-          ]
-        },
-        "spider": {
-          "homeContent": {
-            "loadUrl": "https://xojav.tv/?lang=zh"
-          },
-          "categoryContent": {
-            "loadUrl": "https://xojav.tv/${tid}${sort_by:-}&mode=async&function=get_block&from=${pg:-1}"
-          },
-          "detailContent": {
-            "loadUrl": "https://xojav.tv/videos/${id}"
-          },
-          "searchContent": {
-            "loadUrl": "https://xojav.tv/search/${key}/?mode=async&function=get_block&sort_by=most_relevant&from_videos=${pg:-1}"
-          }
-        }
-      }
-    },
-    {
       "key": "netflav",
-      "name": "NETFLAV",
+      "name": "⛔NETFLAV",
       "type": 3,
       "quickSearch": 0,
       "searchable": 1,
@@ -307,11 +447,6 @@
             "https://*.xlvirdr.com/*"
           ]
         },
-        "playUrlMatch": [
-          "https://*/*/master.m3u8*",
-          "https://*/*/v.mp4",
-          "https://*/*/playlist.m3u8*"
-        ],
         "spider": {
           "homeContent": {
             "loadUrl": "https://netflav.com/trending"
@@ -321,9 +456,6 @@
           },
           "detailContent": {
             "loadUrl": "https://netflav.com/video?id=${id}/"
-          },
-          "playerContent": {
-            "loadUrl": "https://netflav.com/video?id=${vod_id}#${src}"
           },
           "searchContent": {
             "loadUrl": "https://netflav.com/search?keyword=${key}&page=${pg:-1}&type=title"
