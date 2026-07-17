@@ -141,19 +141,19 @@
         ],
         "spider": {
           "homeContent": {
-            "loadUrl": "https://123av.com/zh/dm9"
+            "loadUrl": "https://123av.com/cn"
           },
           "categoryContent": {
-            "loadUrl": "https://123av.com/zh/${tid}?page=${pg:-1}${filter:-}${sort:-}"
+            "loadUrl": "https://123av.com/cn/${tid}?page=${pg:-1}${filter:-}${sort:-}"
           },
           "detailContent": {
-            "loadUrl": "https://123av.com/zh/${id}"
+            "loadUrl": "https://123av.com/cn/${id}"
           },
           "playerContent": {
-            "loadUrl": "https://123av.com/zh/${vod_id}"
+            "loadUrl": "https://123av.com/cn/${vod_id}"
           },
           "searchContent": {
-            "loadUrl": "https://123av.com/zh/search?keyword=${key}&page=${pg:-1}"
+            "loadUrl": "https://123av.com/cn/search?keyword=${key}&page=${pg:-1}"
           }
         }
       }
@@ -307,7 +307,7 @@
     },
     {
       "key": "JAVGG",
-      "name": "🆕🔧JAVGG",
+      "name": "🆕JAVGG",
       "type": 3,
       "quickSearch": 1,
       "searchable": 1,
@@ -316,7 +316,7 @@
       "timeout": 60,
       "style": {
         "type": "rect",
-        "ratio": 1.49
+        "ratio": 0.71
       },
       "api": "csp_GM",
       "ext": {
@@ -325,22 +325,34 @@
         "webViewSettings": {
           "blockNetworkImage": true,
           "blockList": [
+            "*.cloudflareinsights.com/*",
             "*.css*",
-            "*.woff2*",
-            "*.googletagmanager.com/*",
             "*.google-analytics.com/*",
-            "*.cloudflareinsights.com/*"
+            "*.googletagmanager.com/*",
+            "*.orbsrv.com/*",
+            "*.shop/*",
+            "*.woff2*",
+            "*.magsrv.com/*",
+            "*.yandex.ru/*"
           ]
         },
+        "playUrlMatch": [
+          "https://earnvidjav.online/*/master.m3u8",
+          "https://*.turbosplayer.com/*/master.m3u8",
+          "https://streamhgjav.online/*/master.m3u8"
+        ],
         "spider": {
           "homeContent": {
             "loadUrl": "https://javgg.net/"
           },
           "categoryContent": {
-            "loadUrl": "https://javgg.net/${tid}/page/${pg:-1}/"
+            "loadUrl": "https://javgg.net/${tid}/page/${pg:-1}/?sort=${sort:-}"
           },
           "detailContent": {
             "loadUrl": "https://javgg.net/jav/${id}/"
+          },
+          "playerContent": {
+            "loadUrl": "${url}"
           },
           "searchContent": {
             "loadUrl": "https://javgg.net/?s=${key}&page=${pg:-1}"

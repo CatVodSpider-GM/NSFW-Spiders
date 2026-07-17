@@ -139,7 +139,6 @@ console.log(JSON.stringify(GM_info));
                 return result;
             },
             categoryContent: function (tid, pg, filter, extend) {
-                console.log(tid, pg, filter, JSON.stringify(extend));
                 let result = {
                     list: [],
                     page: pg,
@@ -241,7 +240,6 @@ console.log(JSON.stringify(GM_info));
     $(document).ready(function () {
         let result = "";
         if ($("#cf-wrapper").length > 0) {
-            console.log("源站不可用:" + $('title').text());
             GM_toastLong("源站不可用:" + $('title').text());
         } else if ($("#body .btn-primary").text() === "Click here to continue") {
             window.location = $("#body .btn-primary").attr("href");

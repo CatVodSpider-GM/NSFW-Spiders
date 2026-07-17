@@ -23,7 +23,7 @@
     }
     Object.freeze(GMSpiderArgs);
 
-    function listVideos($cards, titleSelector) {
+    function listVideos($cards) {
         var items = [];
         $cards.each(function () {
             var a = this.querySelector('a[href*="/video/"]');
@@ -92,7 +92,7 @@
                     {type_id: 'actresses', type_name: '女优'},
                     {type_id: 'channels', type_name: '频道'},
                 ],
-                list: listVideos(jQuery('.front-video-grid-foryou .front-video-card'), '.front-video-title'),
+                list: listVideos(jQuery('.front-video-grid-foryou .front-video-card')),
                 filters: {
                     'videos': SORT_FILTER,
                     'censored': SORT_FILTER,
@@ -121,7 +121,7 @@
                     };
                 default:
                     return {
-                        list: listVideos(jQuery('article.front-video-card'), '.front-video-title'),
+                        list: listVideos(jQuery('article.front-video-card')),
                         pagecount: 1000
                     };
             }
