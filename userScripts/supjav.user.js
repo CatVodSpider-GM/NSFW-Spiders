@@ -5,11 +5,9 @@
 // @description  Supjav GMSpider
 // @author       Luomo
 // @match        https://supjav.com/*
-// @require      https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js
-// @grant        GM_cookie
+// @require      https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js
 // @grant        unsafeWindow
 // ==/UserScript==
-console.log(JSON.stringify(GM_info));
 (function () {
     const GMSpiderArgs = {};
     if (typeof GmSpiderInject !== 'undefined') {
@@ -24,38 +22,20 @@ console.log(JSON.stringify(GM_info));
     const GmSpider = (function () {
         function listVideos() {
             let itemList = [];
-            $(".post").each(function () {
-                const url = new URL($(this).find(".img").attr("href"));
+            jQuery(".post").each(function () {
+                const url = new URL(jQuery(this).find(".img").attr("href"));
                 itemList.push({
                     vod_id: url.pathname.split('/').at(2),
-                    vod_name: $(this).find(".img").attr("title"),
-                    vod_pic: formatImgUrl($(this).find("img").data("original")),
-                    vod_remarks: $(this).find(".date").text(),
-                    vod_year: $(this).find(".meta").children().remove().end().text()
+                    vod_name: jQuery(this).find(".img").attr("title"),
+                    vod_pic: formatImgUrl(jQuery(this).find("img").data("original")),
+                    vod_remarks: jQuery(this).find(".date").text(),
+                    vod_year: jQuery(this).find(".meta").children().remove().end().text()
                 })
             });
             return itemList;
         }
 
-        let cf_clearance = null;
-
         function formatImgUrl(url) {
-            if (cf_clearance === null) {
-                GM_cookie.list({name: "cf_clearance"}, function (cookies, error) {
-                    if (!error && cookies.length > 0) {
-                        cf_clearance = cookies[0].value;
-                        localStorage.setItem("cf_clearance", cf_clearance);
-                    } else {
-                        let cache_cf_clearance = localStorage.getItem("cf_clearance");
-                        if (typeof cache_cf_clearance !== "undefined" && cache_cf_clearance !== null && cache_cf_clearance.length > 0) {
-                            cf_clearance = cache_cf_clearance;
-                        }
-                    }
-                });
-            }
-            if (cf_clearance !== null) {
-                url = url + "@User-Agent=" + window.navigator.userAgent + "@Cookie=cf_clearance=" + cf_clearance;
-            }
             return url;
         }
 
@@ -122,9 +102,9 @@ console.log(JSON.stringify(GM_info));
                     pagecount: 1
                 };
                 if (tid === "tag") {
-                    $(".categorys .child").each(function () {
-                        const url = new URL($(this).find("a").attr("href")).pathname.split('/');
-                        const text = $(this).text().trim().split("(")
+                    jQuery(".categorys .child").each(function () {
+                        const url = new URL(jQuery(this).find("a").attr("href")).pathname.split('/');
+                        const text = jQuery(this).text().trim().split("(")
                         result.list.push({
                             vod_id: url[2] + "/" + url[3],
                             vod_name: text[0],
@@ -136,29 +116,29 @@ console.log(JSON.stringify(GM_info));
                             }
                         })
                     });
-                    result.pagecount = $(".pagination li").not(".next-page").last().text().trim();
+                    result.pagecount = jQuery(".pagination li").not(".next-page").last().text().trim();
                 } else {
-                    if ($(".pagination li").length > 0) {
-                        result.pagecount = $(".pagination li").not(".next-page").last().text().trim();
+                    if (jQuery(".pagination li").length > 0) {
+                        result.pagecount = jQuery(".pagination li").not(".next-page").last().text().trim();
                     }
                     result.list = listVideos();
                 }
                 return result;
             },
             detailContent: function (ids) {
-                $("#vserver").click();
+                jQuery("#vserver").click();
                 let vodActor = [], tags = [];
-                $(".post-meta .cats a").each(function () {
-                    const id = new URL($(this).attr("href")).pathname.replace("/zh/", "");
-                    const name = $(this).text().trim();
+                jQuery(".post-meta .cats a").each(function () {
+                    const id = new URL(jQuery(this).attr("href")).pathname.replace("/zh/", "");
+                    const name = jQuery(this).text().trim();
                     vodActor.unshift(`[a=cr:{"id":"${id}","name":"${name}"}/]${name}[/a]`);
                 });
-                $(".post-meta .tags a").each(function () {
-                    const id = new URL($(this).attr("href")).pathname.replace("/zh/", "");
-                    const name = $(this).text().trim();
+                jQuery(".post-meta .tags a").each(function () {
+                    const id = new URL(jQuery(this).attr("href")).pathname.replace("/zh/", "");
+                    const name = jQuery(this).text().trim();
                     tags.push(`[a=cr:{"id":"${id}","name":"${name}"}/]#${name}[/a]`);
                 });
-                let vodContent = $(".post-meta .img").attr("alt").trim();
+                let vodContent = jQuery(".post-meta .img").attr("alt").trim();
                 let vodName = vodContent.replace("[无码破解]", '');
                 let match = vodName.match(/^[\w|-]+/g);
                 if (match) {
@@ -173,23 +153,20 @@ console.log(JSON.stringify(GM_info));
                 }
                 let vodPlayData = [];
                 let btnServers;
-                if ($(".video-wrap .cd-server").length > 0) {
-                    btnServers = $(".video-wrap .cd-server:first .btn-server");
+                if (jQuery(".video-wrap .cd-server").length > 0) {
+                    btnServers = jQuery(".video-wrap .cd-server:first .btn-server");
                 } else {
-                    btnServers = $(".video-wrap .btn-server");
+                    btnServers = jQuery(".video-wrap .btn-server");
 
                 }
                 btnServers.each(function (i) {
                     vodPlayData.push({
-                        from: $(this).text().trim(),
+                        from: jQuery(this).text().trim(),
                         media: [{
                             name: vodName,
                             type: "webview",
                             ext: {
-                                replace: {
-                                    pathname: ids[0],
-                                    link: i
-                                }
+                                url: "https://supjav.com/zh/" + ids[0] + "#" + i
                             }
                         }]
                     });
@@ -198,7 +175,7 @@ console.log(JSON.stringify(GM_info));
                     list: [{
                         vod_id: ids[0],
                         vod_name: vodName,
-                        vod_pic: formatImgUrl($(".post-meta .img").attr("src")),
+                        vod_pic: formatImgUrl(jQuery(".post-meta .img").attr("src")),
                         vod_actor: vodActor.join(" "),
                         vod_remarks: tags.join(" "),
                         vod_content: vodContent,
@@ -220,23 +197,17 @@ console.log(JSON.stringify(GM_info));
                     pagecount: 1
                 };
                 result.list = listVideos();
-                if ($(".pagination li").length > 0) {
-                    result.pagecount = $(".pagination li").not(".next-page").last().text().trim();
+                if (jQuery(".pagination li").length > 0) {
+                    result.pagecount = jQuery(".pagination li").not(".next-page").last().text().trim();
                 }
                 return result;
             }
         };
     })();
-    $(document).ready(function () {
-        if ($(".loading-verifying").length > 0) {
-            GmSpiderInject.ShowWebview();
-        }
-    });
-    $(unsafeWindow).on("load", function () {
+    jQuery(function () {
         const result = GmSpider[GMSpiderArgs.fName](...GMSpiderArgs.fArgs);
         console.log(result);
         if (typeof GmSpiderInject !== 'undefined') {
-            GmSpiderInject.HideWebview();
             GmSpiderInject.SetSpiderResult(JSON.stringify(result));
         }
     });

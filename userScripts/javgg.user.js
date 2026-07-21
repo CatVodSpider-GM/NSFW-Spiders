@@ -5,6 +5,11 @@
 // @description  JAVGG GMSpider
 // @author       Luomo
 // @match        https://javgg.net/*
+// @match        https://earnvidjav.online/*
+// @match        https://javggvideo.xyz/*
+// @match        https://streamhgjav.online/*
+// @require      https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js
+// @require      ../Spiders-Lib/utils.js
 // @grant        unsafeWindow
 // ==/UserScript==
 
@@ -39,23 +44,31 @@
     const GmSpider = {
         homeContent: function () {
             const filter = {
-                key: "sort", name: "排序", value: [{
-                    n: "全部", v: ""
-                }, {
-                    n: "本月", v: "monthly"
-                }, {
-                    n: "本周", v: "weekly"
-                }, {
-                    n: "今日", v: "today"
-                }]
+                key: "sort", name: "排序", value: [
+                    {
+                        n: "全部", v: ""
+                    }, {
+                        n: "本月", v: "monthly"
+                    }, {
+                        n: "本周", v: "weekly"
+                    }, {
+                        n: "今日", v: "today"
+                    }]
             };
             return {
-                class: [{type_id: 'new-post', type_name: '最新'}, {
-                    type_id: 'trending', type_name: '热门'
-                }, {type_id: 'featured', type_name: '精选'}],
+                class: [
+                    {type_id: 'new-post', type_name: '最新'},
+                    {type_id: 'trending', type_name: '热门'},
+                    {type_id: 'featured', type_name: '精选'},
+                    {type_id: 'tag/hd-uncensored', type_name: '无码'},
+                    {type_id: 'tag/chinese-porn', type_name: '中国'},
+                ],
                 list: listVideos(jQuery("#featured-titles .owl-item")),
                 filters: {
-                    "trending": filter, "featured": filter
+                    "trending": filter,
+                    "featured": filter,
+                    "tag/hd-uncensored": filter,
+                    "tag/chinese-porn": filter
                 },
             };
         },
@@ -80,9 +93,7 @@
                         name: "正片",
                         type: "webview",
                         ext: {
-                            replace: {
-                                url: jQuery("#source-player-" + jQuery(this).data("nume")).find("#playaa").attr("src"),
-                            }
+                            url: jQuery("#source-player-" + jQuery(this).data("nume")).find("#playaa").attr("src")
                         }
                     }]
                 });
@@ -90,7 +101,7 @@
             return {
                 list: [{
                     vod_id: ids[0],
-                    vod_name: jQuery('meta[property="og:title"]').attr('content'),
+                    vod_name: GMSpiderUtils.extractCode(jQuery('meta[property="og:title"]').attr('content')),
                     vod_pic: jQuery('meta[property="og:image"]').attr('content'),
                     vod_year: jQuery('span[itemprop="dateCreated"]').text().trim(),
                     vod_actor: tags?.star?.join(' ') ?? '',

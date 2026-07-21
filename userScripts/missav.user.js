@@ -257,13 +257,7 @@ console.log(JSON.stringify(GM_info));
         };
     })();
     $(document).ready(function () {
-        let result = "";
-        if ($("#cf-wrapper").length > 0) {
-            console.log("源站不可用:" + $('title').text());
-            GM_toastLong("源站不可用:" + $('title').text());
-        } else {
-            result = GmSpider[GMSpiderArgs.fName](...GMSpiderArgs.fArgs);
-        }
+        let result = GmSpider[GMSpiderArgs.fName](...GMSpiderArgs.fArgs);
         console.log(result);
         if (typeof GmSpiderInject !== 'undefined') {
             GmSpiderInject.SetSpiderResult(JSON.stringify(result));

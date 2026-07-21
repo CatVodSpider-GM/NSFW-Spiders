@@ -5,7 +5,9 @@
 // @description  AVPorner GMSpider
 // @author       Luomo
 // @match        https://avporner.com/*
+// @match        https://hornyhill.st/*
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js
+// @require      ../Spiders-Lib/utils.js
 // @grant        unsafeWindow
 // ==/UserScript==
 
@@ -46,7 +48,7 @@
                 vod_tag: 'folder',
                 style: {
                     "type": "rect",
-                    "ratio": 2
+                    "ratio": 3
                 }
             });
         });
@@ -70,6 +72,10 @@
                     {type_id: 'videos/latest', type_name: '最新'},
                     {type_id: 'videos/trending', type_name: '趋势'},
                     {type_id: 'videos/top', type_name: '热门'},
+                    {type_id: 'videos/category/Uncensored', type_name: '无码'},
+                    {type_id: 'videos/category/Chinese', type_name: '中国'},
+                    {type_id: 'videos/category/Korean', type_name: '韩国'},
+                    {type_id: 'videos/category/Cam', type_name: '直播录像'},
                     {type_id: 'studios', type_name: '厂牌'},
                     {type_id: 'categories', type_name: '分类'}
                 ],
@@ -110,27 +116,45 @@
             return {
                 list: [{
                     vod_id: vid,
-                    vod_name: jsonld.name,
+                    vod_name: GMSpiderUtils.extractCode(jsonld.name),
                     vod_pic: jsonld.thumbnailUrl,
                     vod_remarks: getTags("CollectionPage").join(' '),
                     vod_actor: getTags("Person").join(' '),
                     type_name: getTags("Organization").join(' '),
                     vod_content: jsonld.name,
                     vod_year: (jsonld.uploadDate || '').substring(0, 10),
-                    vod_play_from: 'AVPorner',
-                    vod_play_url: '正片$' + jsonld.contentUrl,
+                    vod_play_data: [{
+                        from: "AVPorner",
+                        media: [{
+                            name: "正片",
+                            type: "webview",
+                            ext: {url: (jQuery('script').text().match(/var embedUrl\s*=\s*'([^']+)'/) || [])[1]}
+                        }]
+                    }],
                 }]
             };
         },
 
+        playerContent: function () {
+            return {
+                type: "direct",
+                ext: {url: jwplayer().getPlaylist()[0].file}
+            };
+        },
+
         searchContent: function () {
-            return {list: listVideos(jQuery('.container-home .video-wrapper'), '.video-title'), pagecount: 1, page: 1};
+            return {
+                list: listVideos(jQuery('.container-home .video-wrapper'), '.video-title'),
+                pagecount: 1000,
+                page: 1
+            };
         },
     };
 
     $(function () {
         var fn = GmSpider[GMSpiderArgs.fName];
         var result = fn ? fn(...GMSpiderArgs.fArgs) : {};
+        console.log(JSON.stringify(result));
         if (typeof GmSpiderInject !== 'undefined') {
             GmSpiderInject.SetSpiderResult(JSON.stringify(result));
         }

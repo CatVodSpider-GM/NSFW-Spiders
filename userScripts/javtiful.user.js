@@ -6,6 +6,7 @@
 // @author       Luomo
 // @match        https://javtiful.com/*
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js
+// @require      ../Spiders-Lib/utils.js
 // @grant        unsafeWindow
 // ==/UserScript==
 
@@ -88,7 +89,7 @@
                     {type_id: 'censored', type_name: '有码'},
                     {type_id: 'uncensored', type_name: '无码'},
                     {type_id: 'reducing-mosaic', type_name: '减码'},
-                    {type_id: 'categories', type_name: '分类'},
+                    {type_id: 'category/chinese-av', type_name: '中国'},
                     {type_id: 'actresses', type_name: '女优'},
                     {type_id: 'channels', type_name: '频道'},
                 ],
@@ -98,12 +99,13 @@
                     'censored': SORT_FILTER,
                     'uncensored': SORT_FILTER,
                     'reducing-mosaic': SORT_FILTER,
+                    'category/chinese-av': SORT_FILTER,
                 }
             };
         },
 
-        categoryContent: function () {
-            switch (arguments[0]) {
+        categoryContent: function (tid) {
+            switch (tid) {
                 case 'categories':
                     return {
                         list: listFolders(".front-collection-grid-category .front-collection-card-category"),
@@ -132,15 +134,21 @@
             return {
                 list: [{
                     vod_id: vid,
-                    vod_name: jQuery('meta[property="og:image:alt"]').attr('content'),
+                    vod_name: GMSpiderUtils.extractCode(jQuery('meta[property="og:image:alt"]').attr('content')),
                     vod_pic: jQuery('meta[property="og:image"]').attr('content'),
                     vod_remarks: getTags(".front-watch-detail:eq(1) .front-watch-link-chip").join(' '),
                     vod_actor: getTags(".front-watch-actor-list .front-watch-actor-card").join(' '),
                     vod_director: getTags(".front-watch-detail:gt(1) .front-watch-link-chip,.front-watch-inline-link").join(' '),
                     vod_content: jQuery('meta[property="og:image:alt"]').attr('content'),
                     vod_year: jQuery('meta[property="article:published_time"]').attr('content').substring(0, 10),
-                    vod_play_from: "Javtiful",
-                    vod_play_url: '正片$' + jQuery('#front-player').attr('src'),
+                    vod_play_data: [{
+                        from: "Javtiful",
+                        media: [{
+                            name: "正片",
+                            type: "direct",
+                            ext: { url: jQuery('#front-player source').attr('src') }
+                        }]
+                    }],
                 }]
             };
         },

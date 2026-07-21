@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         Jable
 // @namespace    gmspider
-// @version      2024.12.03
+// @version      2026.07.21
 // @description  Jable GMSpider
 // @author       Luomo
 // @match        https://jable.tv/*
-// @require      https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js
+// @require      https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.slim.min.js
+// @require      ../Spiders-Lib/utils.js
 // @grant        unsafeWindow
 // ==/UserScript==
-console.log(JSON.stringify(GM_info));
 (function () {
     const GMSpiderArgs = {};
     if (typeof GmSpiderInject !== 'undefined') {
@@ -16,29 +16,30 @@ console.log(JSON.stringify(GM_info));
         GMSpiderArgs.fName = args.shift();
         GMSpiderArgs.fArgs = args;
     } else {
-        GMSpiderArgs.fName = "homeContent";
+        GMSpiderArgs.fName = "detailContent";
         GMSpiderArgs.fArgs = [true];
     }
     Object.freeze(GMSpiderArgs);
     const GmSpider = (function () {
-        function listVideos(result) {
-            result.pagecount = parseInt($(".pagination .page-item:last").text());
-            $("[id^='list_videos_'] .row:first .video-img-box").each(function (i) {
-                const subTitle = $(this).find(".sub-title").text().split('\n');
+
+        function listVideos() {
+            const list = [];
+            jQuery("[id^='list_videos_'] .row:first .video-img-box").each(function (i) {
+                const subTitle = jQuery(this).find(".sub-title").text().split('\n');
                 const remarks = [
                     "👁️" + subTitle[1].trim(),
                     "❤️" + subTitle[2].trim()
                 ];
-                const url = new URL($(this).find(".img-box a").attr("href"));
-                result.list.push({
+                const url = new URL(jQuery(this).find(".img-box a").attr("href"));
+                list.push({
                     vod_id: url.pathname.split('/').at(2).toUpperCase(),
-                    vod_name: $(this).find(".title").text(),
-                    vod_pic: $(this).find(".img-box img").data("src"),
+                    vod_name: jQuery(this).find(".title").text(),
+                    vod_pic: jQuery(this).find(".img-box img").data("src"),
                     vod_remarks: remarks.join(" "),
-                    vod_year: $(this).find(".absolute-bottom-right").text().trim()
+                    vod_year: jQuery(this).find(".absolute-bottom-right").text().trim()
                 })
             });
-            return result;
+            return list;
         }
 
         return {
@@ -122,14 +123,14 @@ console.log(JSON.stringify(GM_info));
                     list: []
                 };
                 let itemList = [];
-                $(".video-img-box").has(".detail").has("img").each(function () {
-                    const url = new URL($(this).find(".img-box a").attr("href"));
+                jQuery(".video-img-box").has(".detail").has("img").each(function () {
+                    const url = new URL(jQuery(this).find(".img-box a").attr("href"));
                     if (url.hostname === "jable.tv") {
                         itemList.push({
                             vod_id: url.pathname.split('/').at(2).toUpperCase(),
-                            vod_name: $(this).find(".title").text(),
-                            vod_pic: $(this).find("img").data("src"),
-                            vod_year: $(this).find(".absolute-bottom-right").text().trim()
+                            vod_name: jQuery(this).find(".title").text(),
+                            vod_pic: jQuery(this).find("img").data("src"),
+                            vod_year: jQuery(this).find(".absolute-bottom-right").text().trim()
                         })
                     }
                 });
@@ -144,13 +145,13 @@ console.log(JSON.stringify(GM_info));
                     pagecount: 1
                 };
                 if (tid === "categories") {
-                    $("#list_categories_video_categories_list .video-img-box").each(function () {
-                        const url = new URL($(this).find("a").attr("href")).pathname.split('/');
+                    jQuery("#list_categories_video_categories_list .video-img-box").each(function () {
+                        const url = new URL(jQuery(this).find("a").attr("href")).pathname.split('/');
                         result.list.push({
                             vod_id: url[1] + "/" + url[2],
-                            vod_name: $(this).find("h4").text(),
-                            vod_pic: $(this).find("img").attr("src"),
-                            vod_remarks: $(this).find(".absolute-center span").text(),
+                            vod_name: jQuery(this).find("h4").text(),
+                            vod_pic: jQuery(this).find("img").attr("src"),
+                            vod_remarks: jQuery(this).find(".absolute-center span").text(),
                             vod_tag: "folder",
                             style: {
                                 "type": "rect",
@@ -159,13 +160,13 @@ console.log(JSON.stringify(GM_info));
                         })
                     });
                     const tags = [];
-                    $(".app-nav .title-box:gt(0)").each(function () {
-                        const remark = $(this).text();
-                        $(this).next(".row").find(".tag").each(function () {
-                            const url = new URL($(this).attr("href")).pathname.split('/');
+                    jQuery(".app-nav .title-box:gt(0)").each(function () {
+                        const remark = jQuery(this).text();
+                        jQuery(this).next(".row").find(".tag").each(function () {
+                            const url = new URL(jQuery(this).attr("href")).pathname.split('/');
                             result.list.push({
                                 vod_id: url[1] + "/" + url[2],
-                                vod_name: $(this).text(),
+                                vod_name: jQuery(this).text(),
                                 vod_remarks: remark,
                                 vod_tag: "folder",
                             })
@@ -173,62 +174,62 @@ console.log(JSON.stringify(GM_info));
                     });
                     result.pagecount = 1;
                 } else {
-                    listVideos(result);
+                    result.list = listVideos();
+                    result.pagecount = 1000;
                 }
                 return result;
             },
             detailContent: function (ids) {
                 let vodActor = [], categories = [], tags = [];
-                $(".video-info .info-header .models .model").each(function () {
-                    const url = new URL($(this).attr("href")).pathname.split('/');
+                jQuery(".video-info .info-header .models .model").each(function () {
+                    const url = new URL(jQuery(this).attr("href")).pathname.split('/');
                     const id = url[1] + "/" + url[2];
-                    const name = $(this).find(".rounded-circle").data("original-title");
+                    const name = jQuery(this).find(".rounded-circle").data("original-title");
                     vodActor.push(`[a=cr:{"id":"${id}","name":"${name}"}/]${name}[/a]`);
                 });
-                $(".video-info .tags .cat").each(function () {
-                    const url = new URL($(this).attr("href")).pathname.split('/');
+                jQuery(".video-info .tags .cat").each(function () {
+                    const url = new URL(jQuery(this).attr("href")).pathname.split('/');
                     const id = url[1] + "/" + url[2];
-                    const name = $(this).text();
+                    const name = jQuery(this).text();
                     categories.push(`[a=cr:{"id":"${id}","name":"${name}"}/]#${name}[/a]`);
                 });
-                $(".video-info .tags a:not(.cat)").each(function () {
-                    const url = new URL($(this).attr("href")).pathname.split('/');
+                jQuery(".video-info .tags a:not(.cat)").each(function () {
+                    const url = new URL(jQuery(this).attr("href")).pathname.split('/');
                     const id = url[1] + "/" + url[2];
-                    const name = $(this).text();
+                    const name = jQuery(this).text();
                     tags.push(`[a=cr:{"id":"${id}","name":"${name}"}/]#${name}[/a]`);
                 });
-                const vod = {
-                    vod_id: ids[0],
-                    vod_name: ids[0].toUpperCase(),
-                    vod_pic: $("#player").attr("poster"),
-                    vod_year: "更新於 " + $(".video-info .info-header .mr-3:first").text() + " " + $(".video-info .info-header .inactive-color").text(),
-                    vod_remarks: tags.join(" "),
-                    vod_actor: vodActor.join(" ") + " " + categories.join(" "),
-                    vod_content: $(".video-info h4").text(),
-                    vod_play_from: $(".video-info .info-header .header-right h6").children().remove().end().text().trim(),
-                    vod_play_url: "1080P$" + unsafeWindow.hlsUrl,
+                return {
+                    list: [{
+                        vod_id: ids[0],
+                        vod_name: GMSpiderUtils.extractCode(jQuery('meta[property="og:title"]').attr('content')),
+                        vod_year: GMSpiderUtils.extractDate(jQuery(".video-info .info-header .inactive-color").text().trim()),
+                        vod_remarks: tags.join(" "),
+                        vod_actor: vodActor.join(" ") + " " + categories.join(" "),
+                        vod_content: jQuery('meta[property="og:title"]').attr('content'),
+                        vod_play_data: [{
+                            from: "Jable",
+                            media: [{
+                                name: "正片",
+                                type: "direct",
+                                ext: {url: unsafeWindow.hlsUrl}
+                            }]
+                        }],
+                    }]
                 };
-                return {list: [vod]};
             },
             searchContent: function (key, quick, pg) {
                 const result = {
-                    list: [],
-                    pagecount: 1
+                    list: listVideos(),
+                    pagecount: 1000
                 };
-                listVideos(result);
                 return result;
             }
         };
     })();
-    $(document).ready(function () {
-        let result = "";
-        if ($("#cf-wrapper").length > 0) {
-            console.log("源站不可用:" + $('title').text());
-            GM_toastLong("源站不可用:" + $('title').text());
-        } else {
-            result = GmSpider[GMSpiderArgs.fName](...GMSpiderArgs.fArgs);
-        }
-        console.log(result);
+    jQuery(document).ready(function () {
+        let result = GmSpider[GMSpiderArgs.fName](...GMSpiderArgs.fArgs);
+        console.log(JSON.stringify(result));
         if (typeof GmSpiderInject !== 'undefined') {
             GmSpiderInject.SetSpiderResult(JSON.stringify(result));
         }

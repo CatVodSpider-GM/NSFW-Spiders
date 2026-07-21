@@ -206,10 +206,7 @@ if (typeof unsafeWindow.gmSpiderRunning === "undefined") {
                                 name: video?.category ?? video.code,
                                 type: "webview",
                                 ext: {
-                                    replace: {
-                                        vod_id: video.videoId,
-                                        src: index + 1
-                                    }
+                                    url: "https://netflav.com/video?id=" + video.videoId + "#" + (index + 1)
                                 }
                             }]
                         })
