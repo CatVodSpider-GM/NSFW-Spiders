@@ -5,7 +5,7 @@
 // @description  Javtiful GMSpider
 // @author       Luomo
 // @match        https://javtiful.com/*
-// @require      https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js
+// @require      https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js
 // @require      ../Spiders-Lib/utils.js
 // @grant        unsafeWindow
 // ==/UserScript==

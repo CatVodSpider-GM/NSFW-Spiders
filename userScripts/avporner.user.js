@@ -6,7 +6,7 @@
 // @author       Luomo
 // @match        https://avporner.com/*
 // @match        https://hornyhill.st/*
-// @require      https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js
+// @require      https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.slim.min.js
 // @require      ../Spiders-Lib/utils.js
 // @grant        unsafeWindow
 // ==/UserScript==
