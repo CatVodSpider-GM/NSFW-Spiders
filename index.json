@@ -17,6 +17,7 @@
       "api": "csp_GM",
       "ext": {
         "userScript": "./userScripts/jable.user.js",
+        "subtitle": true,
         "webViewSettings": {
           "blockNetworkImage": true,
           "blockCssAndFont": true
@@ -53,11 +54,13 @@
       "api": "csp_GM",
       "ext": {
         "userScript": "./userScripts/avporner.user.js",
+        "subtitle": true,
         "webViewSettings": {
           "blockNetworkImage": true,
           "blockCssAndFont": true,
           "allowList": [
-            "https://hornyhill.st/*"
+            "https://*hornyhill.st/*",
+            "https://*jwpcdn.com/*"
           ]
         },
         "spider": {
@@ -92,6 +95,7 @@
       "api": "csp_GM",
       "ext": {
         "userScript": "./userScripts/av01.user.js",
+        "subtitle": true,
         "webViewSettings": {
           "blockNetworkImage": true,
           "blockCssAndFont": true,
@@ -131,6 +135,7 @@
       "api": "csp_GM",
       "ext": {
         "userScript": "./userScripts/123av.user.js",
+        "subtitle": true,
         "webViewSettings": {
           "blockNetworkImage": true,
           "blockCssAndFont": true,
@@ -173,6 +178,7 @@
       "api": "csp_GM",
       "ext": {
         "userScript": "./userScripts/missav.user.js",
+        "subtitle": true,
         "webViewSettings": {
           "blockNetworkImage": true,
           "blockCssAndFont": true
@@ -209,6 +215,7 @@
       "api": "csp_GM",
       "ext": {
         "userScript": "./userScripts/javtiful.user.js",
+        "subtitle": true,
         "webViewSettings": {
           "blockNetworkImage": true,
           "blockCssAndFont": true
@@ -245,6 +252,7 @@
       "api": "csp_GM",
       "ext": {
         "userScript": "./userScripts/javgg.user.js",
+        "subtitle": true,
         "webViewSettings": {
           "blockNetworkImage": true,
           "blockCssAndFont": true,
@@ -255,9 +263,10 @@
           ]
         },
         "playUrlMatch": [
-          "https://earnvidjav.online/*/master.m3u8",
+          "https://earnvidjav*/*/master.m3u8",
           "https://*.turbosplayer.com/*/master.m3u8",
-          "https://streamhgjav.online/*/master.m3u8"
+          "https://streamhgjav.online/*/master.m3u8",
+          "https://javstreamhq.xyz/*/master.m3u8"
         ],
         "spider": {
           "homeContent": {
@@ -291,6 +300,7 @@
       "api": "csp_GM",
       "ext": {
         "userScript": "./userScripts/supjav.user.js",
+        "subtitle": true,
         "webViewSettings": {
           "blockNetworkImage": true,
           "blockCssAndFont": true,
@@ -340,6 +350,7 @@
       "api": "csp_GM",
       "ext": {
         "userScript": "./userScripts/xojav.user.js",
+        "subtitle": true,
         "webViewSettings": {
           "blockNetworkImage": true,
           "blockCssAndFont": true

@@ -91,7 +91,7 @@
                     list: videos.map(function (v) {
                         return {
                             vod_id: v.id + '/' + v.dvd_id,
-                            vod_name: (v.title_translations && v.title_translations.cn) || v.title,
+                            vod_name:GMSpiderUtils.extractCode(v.dvd_id ) + ((v.title_translations && v.title_translations.cn) || v.title),
                             vod_pic: 'https://files.iw01.xyz/covers/' + v.id + '/800.webp' + (cdnToken ? '?' + cdnToken : ''),
                             vod_remarks: Math.floor(v.duration / 60) + 'm'
                         };

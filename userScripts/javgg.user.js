@@ -5,9 +5,7 @@
 // @description  JAVGG GMSpider
 // @author       Luomo
 // @match        https://javgg.net/*
-// @match        https://earnvidjav.online/*
-// @match        https://javggvideo.xyz/*
-// @match        https://streamhgjav.online/*
+// @match        https://*/*
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js
 // @require      ../Spiders-Lib/utils.js
 // @grant        unsafeWindow
