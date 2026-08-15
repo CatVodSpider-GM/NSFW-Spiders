@@ -19,18 +19,19 @@ const GMSpiderUtils = {
 
     extractCode(text) {
         text = String(text || "").trim();
-        // 优先: 标准番号 MIDA-706 / FC2PPV-4940812
-        const code = this.extract(text, /\[?([a-z0-9]{2,10}-[a-z0-9]{2,10})\]?/i);
+        // 优先: 标准番号，最后一段以数字结尾
+        //   MIDA-706 / FC2PPV-4940812 / FC2-PPV-4961866 / ABC-A156（保留整串）
+        //   hmn-895-lada → 只取 hmn-895（-lada 不以数字结尾，不吞）
+        const code = this.extract(text, /\[?([a-z0-9]{2,10}(?:-[a-z0-9]{2,10}){0,3}-[a-z0-9]*\d)\]?/i);
         if (code) {
             const cleaned = code.replace(/[\[\]]/g, "");
-            // 排除纯数字日期组合 (如 2026-06、2024-12-25)，标准番号至少一侧含字母
-            if (!/^\d{2,4}-\d{2,4}$/.test(cleaned)) {
+            // 排除纯数字连字符串 (如 2026-06、2024-12-25)，标准番号至少含字母
+            if (!/^[\d-]+$/.test(cleaned)) {
                 return cleaned.toUpperCase();
             }
         }
-        // 次选: 带数字的独立字符串 (如 28122458, hookup123)
-        const alt = text.match(/\b[a-z0-9]*\d[a-z0-9]*\b/gi);
-        return alt ? alt[0].toUpperCase() : text;
+        // 无番号/纯日期: 直接回退原文（作字幕搜索关键词时保留完整片名，不截取一段）
+        return text;
     },
 
     /**
