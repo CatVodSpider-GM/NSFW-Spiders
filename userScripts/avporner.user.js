@@ -4,8 +4,7 @@
 // @version      2026.07.09
 // @description  AVPorner GMSpider
 // @author       Luomo
-// @match        https://avporner.com/*
-// @match        https://hornyhill.st/*
+// @match        https://*/*
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.slim.min.js
 // @require      ../Spiders-Lib/utils.js
 // @grant        unsafeWindow
