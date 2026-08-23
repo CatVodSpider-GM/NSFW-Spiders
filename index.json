@@ -1,5 +1,5 @@
 {
-  "spider": "./Spiders-Lib/GM.jar;md5;351f94b8dfd8d127482343bd0cebd829",
+  "spider": "./Spiders-Lib/GM.jar;md5;8df3fb7b701f9fa5639444a0839c4afc",
   "sites": [
     {
       "key": "Jable",
@@ -367,6 +367,48 @@
           },
           "searchContent": {
             "loadUrl": "https://xojav.tv/search/${key}/?mode=async&function=get_block&sort_by=most_relevant&from_videos=${pg:-1}"
+          }
+        }
+      }
+    },
+    {
+      "key": "HuangGuoAi",
+      "name": "✨黄果短剧",
+      "type": 3,
+      "quickSearch": 0,
+      "searchable": 1,
+      "changeable": 0,
+      "filterable": 0,
+      "timeout": 60,
+      "style": {
+        "type": "rect",
+        "ratio": 0.75
+      },
+      "api": "csp_GM",
+      "ext": {
+        "userScript": "./userScripts/huangguoai.user.js",
+        "webViewSettings": {
+          "blockNetworkImage": false,
+          "blockCssAndFont": true,
+          "allowList": [
+            "https://*.yrfmba.cn/*"
+          ]
+        },
+        "spider": {
+          "homeContent": {
+            "loadUrl": "https://huangguoai.com/"
+          },
+          "categoryContent": {
+            "loadUrl": "https://huangguoai.com/${tid}/${pg:-1}/"
+          },
+          "detailContent": {
+            "loadUrl": "https://huangguoai.com/detail/${id}/"
+          },
+          "playerContent": {
+            "loadUrl": "${url}"
+          },
+          "searchContent": {
+            "loadUrl": "https://huangguoai.com/search/video/${key}/"
           }
         }
       }
