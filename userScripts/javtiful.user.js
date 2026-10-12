@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Javtiful
 // @namespace    gmspider
-// @version      2026.07.09
+// @version      2026.10.12
 // @description  Javtiful GMSpider
 // @author       Luomo
 // @match        https://javtiful.com/*
@@ -24,6 +24,24 @@
     }
     Object.freeze(GMSpiderArgs);
 
+    /**
+     * 取封面地址：站点改版后统一为 data-front-lazy-src（旧 data-front-lazy-original-src 已废弃），
+     * 目录类卡片则直接是 src。返回绝对地址。
+     */
+    function imgUrl($card) {
+        var $img = $card.find('img').first();
+        var src = $img.attr('data-front-lazy-src') || $img.attr('data-front-lazy-original-src') || $img.attr('src') || '';
+        if (!src) return '';
+        return src.indexOf('http') === 0 ? src : window.location.origin + src;
+    }
+
+    /** 时长：.video-card__details 形如 "FHD 02:16:24"，取时间部分 */
+    function durationOf($card) {
+        var raw = $card.find('.video-card__details').first().text().replace(/\s+/g, ' ').trim();
+        var m = raw.match(/\d{1,2}:\d{2}(?::\d{2})?/);
+        return m ? m[0] : raw;
+    }
+
     function listVideos($cards) {
         var items = [];
         $cards.each(function () {
@@ -31,23 +49,29 @@
             if (!a) return;
             items.push({
                 vod_id: a.href.split('/video/')[1],
-                vod_name: jQuery(this).find(".front-video-title").text().trim(),
-                vod_pic: window.location.origin + jQuery(this).find('img').attr('data-front-lazy-src'),
-                vod_remarks: jQuery(this).find('.front-duration-tag').text().trim(),
+                vod_name: jQuery(this).find('.video-card__title').first().text().trim(),
+                vod_pic: imgUrl(jQuery(this)),
+                vod_remarks: durationOf(jQuery(this)),
             });
         });
         return items;
     }
 
+    // 目录卡片：女优/频道是 article.directory-card（链接在内部的 a.directory-card__link），
+    // 分类是 a.category-card 本身，故两种形态都兼容。
     function listFolders(select, rect = 1.78) {
         let items = [];
         jQuery(select).each(function () {
+            var a = this.tagName === 'A' ? this : this.querySelector('a[href]');
+            if (!a) return;
+            var href = a.getAttribute('href') || '';
+            if (!href) return;
             items.push({
-                vod_id: jQuery(this).find(".front-collection-card-link").attr('href').replace(/^\/zh\//, ''),
-                vod_name: jQuery(this).find(".front-collection-title").text().trim(),
+                vod_id: href.replace(/^\/zh\//, ''),
+                vod_name: jQuery(this).find('.directory-card__name, .category-card__name').first().text().trim(),
                 vod_tag: 'folder',
-                vod_pic: window.location.origin + jQuery(this).find('img').attr('data-front-lazy-original-src'),
-                vod_remarks: jQuery(this).find('.front-collection-meta').text().trim(),
+                vod_pic: imgUrl(jQuery(this)),
+                vod_remarks: jQuery(this).find('.directory-card__count, .category-card__count').first().text().trim(),
                 style: {
                     "type": "rect",
                     "ratio": rect
@@ -60,11 +84,28 @@
     function getTags(select) {
         let tags = [];
         jQuery(select).each(function () {
-            const id = jQuery(this).attr('href').replace(/^\/zh\//, '');
+            const href = jQuery(this).attr('href') || '';
             const name = jQuery(this).text().trim();
+            if (!href) {
+                tags.push(name);
+                return;
+            }
+            // 标签的落地页是搜索页（站点已无 tag 页）：/zh/search?q=xxx。
+            // 宿主把 tid 拼进 "https://javtiful.com/zh/${tid}?sort=&page="，
+            // 故标签的 tid 需自带 "search?q=xxx&"；否则拼出 "?q=xxx?sort="，
+            // 搜索词会被污染成 "xxx?sort="（实测只剩模糊匹配的零星结果）。
+            let id = href.replace(/^\/zh\//, '');
+            if (href.indexOf('/zh/search?q=') === 0) id += '&';
             tags.push(`[a=cr:{"id":"${id}","name":"${name}"}/]${name}[/a]`);
         });
         return tags;
+    }
+
+    // 首页是聚合页（.home-section 若干块），首个板块即「为你推荐」，沿用旧行为只取这一块
+    function homeVideos() {
+        var $sec = jQuery('.home-section').first();
+        if (!$sec.length) $sec = jQuery('.video-grid').first();
+        return listVideos($sec.find('article.video-card'));
     }
 
     const GmSpider = {
@@ -93,7 +134,7 @@
                     {type_id: 'actresses', type_name: '女优'},
                     {type_id: 'channels', type_name: '频道'},
                 ],
-                list: listVideos(jQuery('.front-video-grid-foryou .front-video-card')),
+                list: homeVideos(),
                 filters: {
                     'videos': SORT_FILTER,
                     'censored': SORT_FILTER,
@@ -108,22 +149,22 @@
             switch (tid) {
                 case 'categories':
                     return {
-                        list: listFolders(".front-collection-grid-category .front-collection-card-category"),
+                        list: listFolders(".categories-grid .category-card"),
                         pagecount: 1
                     };
                 case 'actresses':
                     return {
-                        list: listFolders(".front-collection-grid-actress .front-collection-card-actress", 1),
+                        list: listFolders(".directory-grid .directory-card--actress", 1),
                         pagecount: 1000
                     };
                 case 'channels':
                     return {
-                        list: listFolders(".front-collection-grid-channel .front-collection-card-channel"),
+                        list: listFolders(".directory-grid .directory-card--channel"),
                         pagecount: 1000
                     };
                 default:
                     return {
-                        list: listVideos(jQuery('article.front-video-card')),
+                        list: listVideos(jQuery('article.video-card')),
                         pagecount: 1000
                     };
             }
@@ -136,9 +177,9 @@
                     vod_id: vid,
                     vod_name: GMSpiderUtils.extractCode(jQuery('meta[property="og:image:alt"]').attr('content')),
                     vod_pic: jQuery('meta[property="og:image"]').attr('content'),
-                    vod_remarks: getTags(".front-watch-detail:eq(1) .front-watch-link-chip").join(' '),
-                    vod_actor: getTags(".front-watch-actor-list .front-watch-actor-card").join(' '),
-                    vod_director: getTags(".front-watch-detail:gt(1) .front-watch-link-chip,.front-watch-inline-link").join(' '),
+                    vod_remarks: getTags(".watch-detail:eq(1) .watch-link-chip").join(' '),
+                    vod_actor: getTags(".watch-actor-list .watch-actor-card").join(' '),
+                    vod_director: getTags(".watch-detail:gt(1) .watch-link-chip,.watch-inline-link").join(' '),
                     vod_content: jQuery('meta[property="og:image:alt"]').attr('content'),
                     vod_year: jQuery('meta[property="article:published_time"]').attr('content').substring(0, 10),
                     vod_play_data: [{
@@ -155,7 +196,7 @@
 
         searchContent: function () {
             return {
-                list: listVideos(jQuery('article.front-video-card'), '.front-video-title'),
+                list: listVideos(jQuery('article.video-card')),
                 pagecount: 1000
             };
         },

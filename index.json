@@ -263,7 +263,10 @@
           ]
         },
         "playUrlMatch": [
-          "https://earnvidjav*/*/master.m3u8",
+          "https://earnvidjav*/*/master.m3u8*",
+          "https://*.f4s.top/*.txt*",
+          "https://*.f4scdn.com/*.txt*",
+          "https://*.plauymito.live/hls/*/*.txt*",
           "https://*.turbosplayer.com/*/master.m3u8",
           "https://streamhgjav.online/*/master.m3u8",
           "https://javstreamhq.xyz/*/master.m3u8"
@@ -307,6 +310,10 @@
           "allowList": [
             "https://*.supremejav.com/*",
             "https://fc2stream.tv/*",
+            "https://vvaassjjav.xyz/*",
+            "https://voe.sx/*",
+            "https://megankiddifference.com/*",
+            "https://luminscdn.xyz/*",
             "https://ajax.googleapis.com/*",
             "https://*.jwpcdn.com/*"
           ]
@@ -316,7 +323,10 @@
           "https://*turbovi*/*.m3u8*",
           "https://streamtape.com/get_video*",
           "https://*.tapecontent.net/*",
-          "https://*.cloudwindow-route.com/*/index-v1-a1.m3u8*"
+          "https://*.cloudwindow-route.com/*.m3u8*",
+          "https://evsishere.xyz/*master.m3u8*",
+          "https://*.97bf1.com/*master.m3u8*",
+          "https://*.tnmr.org/*master.m3u8*"
         ],
         "spider": {
           "homeContent": {
@@ -391,7 +401,7 @@
           "blockNetworkImage": false,
           "blockCssAndFont": true,
           "allowList": [
-            "https://*.yrfmba.cn/*"
+            "https://*.wirqed.cn/*"
           ]
         },
         "spider": {
@@ -402,7 +412,7 @@
             "loadUrl": "https://huangguoai.com/${tid}/${pg:-1}/"
           },
           "detailContent": {
-            "loadUrl": "https://huangguoai.com/detail/${id}/"
+            "loadUrl": "https://huangguoai.com/video/${id}/"
           },
           "playerContent": {
             "loadUrl": "${url}"

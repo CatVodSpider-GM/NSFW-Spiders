@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         黄果短剧
 // @namespace    gmspider
-// @version      2026.08.24
+// @version      2026.10.12
 // @description  黄果短剧 GMSpider
 // @author       Luomo
 // @match        https://huangguoai.com/*
@@ -37,9 +37,13 @@
     const MAX_CACHE = 300;         // 封面缓存条数上限（盒子 localStorage 配额有限）
 
     // ==================== 图片解密管线 ====================
-    // 解密逻辑完全复用站点自己的 crypto-worker.js：站点换密钥/算法自动跟随，无需自研。
-    // 封面 URL 统一来自 /api/media/covers（type+id → 签名 URL），解密后降采样为 data URI，
-    // 由 GM 侧落盘缓存；脚本内 localStorage 二级缓存。
+    // 2026-10-11 站点改版后，封面 URL 变成明文签名直链（pic.wirqed.cn/...?auth_key=...），
+    // 但**字节仍然是加密的**：直接 fetch 回来的是不可解码的密文（首字节不是图片魔数），
+    // 站点前端也是靠 crypto-worker.js 解出 JPEG 再换 img.src。所以解密这一步不能省，
+    // 继续复用站点自己的 crypto-worker.js：站点换密钥/算法自动跟随，无需自研。
+    // 封面 URL 有两处来源：列表 JSON-LD 条目不带图 → /api/media/covers（type+id → 签名 URL）；
+    // 搜索页的 DOM 卡片自带 img[data-src]。解密后降采样为 data URI——签名 URL 会过期（几小时），
+    // data URI 不会，所以缓存下来的是 data URI（GM 侧落盘 + 脚本内 localStorage 二级缓存）。
 
     function lsGet(key) {
         try {
@@ -262,55 +266,117 @@
 
     // ==================== 页面工具 ====================
 
-    /** 从页面 JSON-LD 中提取 ItemList 条目（首页 #home-itemlist、分类页 #itemlist）。 */
-    function getLdItemList() {
-        // 站点可能输出多个 JSON-LD 块，扫描全部，命中 ItemList 即返回
-        const els = document.querySelectorAll('script[type="application/ld+json"]');
-        for (let i = 0; i < els.length; i++) {
+    /** 页面可能输出多个 JSON-LD 块；拍平成 @graph 节点数组。 */
+    function getLdNodes() {
+        const nodes = [];
+        [].forEach.call(document.querySelectorAll('script[type="application/ld+json"]'), function (s) {
             let data = null;
             try {
-                data = JSON.parse(els[i].textContent);
+                data = JSON.parse(s.textContent);
             } catch (e) {
-                continue;
+                return;
             }
-            const graph = (data && data['@graph']) || [];
-            for (let j = 0; j < graph.length; j++) {
-                const node = graph[j];
-                const types = Array.isArray(node['@type']) ? node['@type'] : [node['@type']];
-                if (types.indexOf('ItemList') >= 0 && Array.isArray(node.itemListElement)) {
-                    return node.itemListElement;
-                }
-            }
+            [].forEach.call((data && data['@graph']) || [], function (n) {
+                nodes.push(n);
+            });
+        });
+        return nodes;
+    }
+
+    /** 按 @type 取第一个 JSON-LD 节点（ItemList 列表条目、VideoObject 详情）。 */
+    function getLdNode(type) {
+        const nodes = getLdNodes();
+        for (let i = 0; i < nodes.length; i++) {
+            const types = Array.isArray(nodes[i]['@type']) ? nodes[i]['@type'] : [nodes[i]['@type']];
+            if (types.indexOf(type) >= 0) return nodes[i];
         }
         return null;
     }
 
+    /** 从页面 JSON-LD 中提取 ItemList 条目（首页 #home-itemlist、分类页等）。 */
+    function getLdItemList() {
+        const node = getLdNode('ItemList');
+        return (node && Array.isArray(node.itemListElement)) ? node.itemListElement : null;
+    }
+
+    /** 视频链接取 id：2026-10-11 改版前列表是 /detail/<id>/，现在是 /video/<id>/。 */
+    function videoIdFromUrl(url) {
+        const m = (url || '').match(/\/video\/(\d+)\//);
+        return m ? m[1] : '';
+    }
+
+    /** 卡片标题：去掉 "全集在线观看" 这类只给读屏用的补全文案（.sr-only）。 */
+    function cardTitle(card) {
+        const a = card.querySelector('.hg-drama-card__title a');
+        if (!a) return '';
+        const clone = a.cloneNode(true);
+        const sr = clone.querySelector('.sr-only');
+        if (sr) sr.parentNode.removeChild(sr);
+        return clone.textContent.trim();
+    }
+
     /**
-     * 视频列表（首页/分类共用）：纯 JSON-LD 数据源，零 DOM 元素依赖。
-     * 基础数据来自页面 <script type="application/ld+json"> 的 ItemList；
-     * 封面：/api/media/covers 换签名 URL → 站点 worker 解密 → 降采样 data URI。
+     * DOM 卡片数据源：搜索页没有 JSON-LD，只有卡片。
+     * 只取 .hg-card-grid 内的卡片（搜索结果），跳过 .hg-search-suggest__guess（"猜你想搜"，不是命中）。
+     * 卡片自带明文封面 img[data-src] 和集数角标 data-ep-base，不用再问 covers 接口。
      */
-    async function buildLdList() {
-        const ldItems = getLdItemList();
-        if (!ldItems || !ldItems.length) return [];
+    function getDomItems() {
+        const items = [];
+        [].forEach.call(document.querySelectorAll('.hg-card-grid .hg-drama-card'), function (card) {
+            if (card.closest('.hg-search-suggest__guess')) return;
+            const link = card.querySelector('.hg-drama-card__cover-link') || card.querySelector('.hg-drama-card__title a');
+            const id = videoIdFromUrl(link && link.getAttribute('href'));
+            if (!id) return;
+            const img = card.querySelector('img[data-src]');
+            const badge = card.querySelector('.hg-drama-card__episode');
+            items.push({
+                id: id,
+                name: cardTitle(card),
+                pic: (img && img.getAttribute('data-src')) || '',
+                remarks: (badge && badge.getAttribute('data-ep-base')) || ''
+            });
+        });
+        return items;
+    }
+
+    /** JSON-LD ItemList → 去重条目（LD 条目只有 name/url，封面留空，回头用 covers 接口补）。 */
+    function ldItems(list) {
         const items = [];
         const seen = {};
-        ldItems.forEach(function (it) {
-            const m = (it.url || '').match(/\/detail\/(\d+)\//);
-            if (!m || seen[m[1]]) return;
-            seen[m[1]] = 1;
-            items.push({id: m[1], name: (it.name || '').trim()});
+        [].forEach.call(list || [], function (it) {
+            const id = videoIdFromUrl(it.url);
+            if (!id || seen[id]) return;
+            seen[id] = 1;
+            items.push({id: id, name: (it.name || '').trim(), pic: '', remarks: ''});
         });
+        return items;
+    }
+
+    /**
+     * 视频列表（首页/分类/搜索共用）：JSON-LD ItemList 优先——名称干净（DOM 标题带"全集在线观看"
+     * 之类的后缀）、条目比渲染出的卡片全；无 LD（搜索页）或 LD 里没有 /video/ 条目时退回 DOM 卡片。
+     * 封面：签名 URL（covers 接口或 data-src）→ 站点 worker 解密 → 降采样 data URI。
+     */
+    async function buildList() {
+        let items = ldItems(getLdItemList());
+        if (!items.length) items = getDomItems();
         if (!items.length) return [];
-        const covers = await fetchCovers(items.map(function (it) {
-            return it.id;
-        }));
-        const idUrls = items.map(function (it) {
-            return {id: it.id, url: covers[it.id] || ''};
+        const needCover = items.filter(function (it) {
+            return !it.pic;
         });
-        const pics = await batchGetPics(idUrls, LIST_MAX_W, LIST_QUALITY);
+        if (needCover.length) {
+            const covers = await fetchCovers(needCover.map(function (it) {
+                return it.id;
+            }));
+            needCover.forEach(function (it) {
+                it.pic = covers[it.id] || '';
+            });
+        }
+        const pics = await batchGetPics(items.map(function (it) {
+            return {id: it.id, url: it.pic};
+        }), LIST_MAX_W, LIST_QUALITY);
         return items.map(function (it, i) {
-            return {vod_id: it.id, vod_name: it.name, vod_pic: pics[i] || ''};
+            return {vod_id: it.id, vod_name: it.name, vod_pic: pics[i] || '', vod_remarks: it.remarks || ''};
         });
     }
 
@@ -327,85 +393,92 @@
                 ];
                 return {
                     class: categories,
-                    list: await buildLdList()
+                    list: await buildList()
                 };
             },
 
             categoryContent: async function (tid, pg, filter, extend) {
-                // 分类页同首页：默认 application/ld+json 的 ItemList 为唯一数据源，
-                // 封面走 covers 接口；不解析分页导航（pagecount 固定 1）。
+                // 分类页同首页：默认 application/ld+json 的 ItemList 为数据源；
+                // 不解析分页导航（pagecount 固定 1），翻页靠 loadUrl 模板里的 ${pg}。
                 return {
-                    list: await buildLdList(),
+                    list: await buildList(),
                     pagecount: 1000
                 };
             },
 
+            searchContent: async function (key, pg, quick) {
+                // 搜索页没有 JSON-LD，buildList 会退回 DOM 卡片（只取结果网格，不含"猜你想搜"）
+                return {list: await buildList()};
+            },
+
             detailContent: async function (ids) {
                 const id = ids[0];
-                const titleEl = document.querySelector('h1');
-                const metaEl = document.querySelector('.hg-web-detail__meta');
-                const descEl = document.querySelector('.hg-web-detail__desc');
-                const metaText = (metaEl && metaEl.textContent) || '';
+                // 2026-10-11 改版：详情页 /detail/<id>/ → /video/<id>/，页面本身即播放页
+                // （hg-web-detail__* 全族换成 hg-web-play__*），简介/日期改从 JSON-LD 取。
+                const titleEl = document.querySelector('.hg-web-play__title') || document.querySelector('h1');
+                const vo = getLdNode('VideoObject') || {};
+                const wp = getLdNode('WebPage') || {};
 
-                // 选集：多集剧从选集网格取，单集视频回退到"立即播放"按钮
+                // 选集：a[data-ep-id]（第 1 集 href 就是 /video/<id>/，之后是 /video/<id>/ep-N/）。
+                // 播放地址仍走接口 GET /api/videos/<id>/play?ep=N，与选集 href 无关。
                 const eps = [];
-                [].forEach.call(document.querySelectorAll('.hg-web-detail__ep-grid a[data-ep-id]'), function (el) {
-                    const ep = parseInt(el.getAttribute('data-ep-id'), 10) || 0;
-                    const href = el.getAttribute('href');
-                    if (href) eps.push({ep: ep, href: href});
+                [].forEach.call(document.querySelectorAll('a[data-ep-id]'), function (el) {
+                    const ep = parseInt(el.getAttribute('data-ep-id'), 10);
+                    if (ep > 0) eps.push(ep);
                 });
-                if (eps.length === 0) {
-                    const play = document.querySelector('.hg-web-detail__play');
-                    const href = play && play.getAttribute('href');
-                    if (href) eps.push({ep: 1, href: href});
-                }
+                if (!eps.length) eps.push(1);   // 没有选集网格时按单集处理
                 eps.sort(function (a, b) {
-                    return a.ep - b.ep;
+                    return a - b;
                 });
 
-                const media = eps.map(function (e) {
+                const media = eps.map(function (ep) {
                     return {
-                        name: '第' + (e.ep < 10 ? '0' + e.ep : e.ep) + '集',
+                        name: '第' + (ep < 10 ? '0' + ep : ep) + '集',
                         type: 'webview',
-                        ext: {url: SITE + '/api/videos/' + id + '/play?ep=' + e.ep}
+                        ext: {url: SITE + '/api/videos/' + id + '/play?ep=' + ep}
                     };
                 });
 
-                // 备注：优先海报上的集数角标（全21集/更新至4集），回退到 meta 中的状态
-                const episodeBadge = document.querySelector('.hg-web-detail__episode');
-                let remarks = (episodeBadge && episodeBadge.textContent.trim()) || '';
-                if (!remarks) {
-                    const statusM = metaText.match(/(已完结|更新至\s*\d+\s*集|全\s*\d+\s*集)/);
-                    remarks = statusM ? statusM[1].replace(/\s+/g, '') : '';
-                }
+                // 备注：侧栏标题下的 "更新至 N 集"（已完结/全集同理），回退到选集数量
+                const sideHead = document.querySelector('.hg-web-play__side-head');
+                const rm = ((sideHead && sideHead.textContent) || '').match(/(已完结|更新至\s*\d+\s*集|全\s*\d+\s*集)/);
+                const remarks = rm ? rm[1].replace(/\s+/g, '') : '更新至' + eps.length + '集';
 
-                const yearM = metaText.match(/(20\d{2})-\d{2}-\d{2}/);
+                // 年份：JSON-LD 的发布日期
+                const dm = ((vo.uploadDate || wp.datePublished) || '').match(/(20\d{2})-/);
+
+                // 类型标签：页面 .hg-web-play__tags 里的可点击标签（LD 的 genre 只有中文名、没有 slug，
+                // 生成不了跳转，所以只用来核对）
                 const tags = [];
-                [].forEach.call(document.querySelectorAll('.hg-web-detail__tags .hg-tag'), function (el) {
+                [].forEach.call(document.querySelectorAll('.hg-web-play__tags .hg-tag'), function (el) {
                     const name = el.textContent.trim();
                     if (!name) return;
-                    // [a=cr] 可点击标签：id 取 /tag/{slug}/ 的路径（如 tag/tianchong），点击触发 categoryContent
-                    const id = (el.getAttribute('href') || '').split('/').filter(Boolean).join('/');
-                    tags.push(`[a=cr:{"id":"${id}/page","name":"${name}"}/]#${name}[/a]`);
+                    // [a=cr] 可点击标签：id 取 /tag/{slug}/ 的路径（如 tag/chaonengli），点击触发 categoryContent
+                    const tagId = (el.getAttribute('href') || '').split('/').filter(Boolean).join('/');
+                    tags.push(`[a=cr:{"id":"${tagId}/page","name":"${name}"}/]#${name}[/a]`);
                 });
-                // 简介中移除"展开"按钮的文本
-                let content = (descEl && descEl.textContent) || '';
-                content = content.replace(/\s*展开\s*$/, '').trim();
+
+                // 简介：改版后详情页 DOM 里已没有简介容器，取 JSON-LD VideoObject.description
+                // （WebPage.description 是截断版，只作兜底）
+                const content = (vo.description || wp.description || '').trim();
+
+                const name = (titleEl && titleEl.textContent.trim())
+                    || ((vo.isPartOf && vo.isPartOf.name) || '');   // LD 的 name 带"第N集"，只用系列名兜底
 
                 const vod = {
                     vod_id: id,
-                    vod_name: (titleEl && titleEl.textContent.trim()) || '',
+                    vod_name: name,
                     vod_remarks: remarks,
-                    vod_year: yearM ? yearM[1] : '',
+                    vod_year: dm ? dm[1] : '',
                     type_name: tags.join(' '),
                     vod_content: content,
-                    vod_play_data: media.length ? [{from: '黄果', media: media}] : []
+                    vod_play_data: [{from: '黄果', media: media}]
                 };
                 return {list: [vod]};
             },
 
             playerContent: async function (flag, id, vipFlags) {
-                // 接口 JSON 响应（GET /api/videos/{id}/play?ep=N → data.video_url）
+                // 接口 JSON 响应（GET /api/videos/{id}/play?ep=N → data.video_url，现为 m3u8 直链）
                 let url = '';
                 try {
                     const text = document.body ? document.body.textContent : '';

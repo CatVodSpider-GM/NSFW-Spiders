@@ -5,7 +5,7 @@
 // @description  123av GMSpider
 // @author       Luomo
 // @match        https://123av.com/*
-// @match        https://javplayer.cc/*
+// @match        https://*/*
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js
 // @grant        unsafeWindow
 // ==/UserScript==
