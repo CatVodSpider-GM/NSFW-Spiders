@@ -424,6 +424,181 @@
       }
     },
     {
+      "key": "AiHuangDou",
+      "name": "✨黄豆短剧",
+      "type": 3,
+      "quickSearch": 0,
+      "searchable": 1,
+      "changeable": 0,
+      "filterable": 0,
+      "timeout": 60,
+      "style": {
+        "type": "rect",
+        "ratio": 0.5625
+      },
+      "api": "csp_GM",
+      "ext": {
+        "userScript": "./userScripts/aihuangdou.user.js",
+        "playUrlMatch": [
+          "https://*.tktjpm.cn/*.m3u8*"
+        ],
+        "webViewSettings": {
+          "blockNetworkImage": false,
+          "blockCssAndFont": true,
+          "allowList": [
+            "https://*.wirqed.cn/*"
+          ]
+        },
+        "spider": {
+          "homeContent": {
+            "loadUrl": "https://aihuangdou.com/"
+          },
+          "categoryContent": {
+            "loadUrl": "https://aihuangdou.com/${tid}/${pg:-1}/"
+          },
+          "detailContent": {
+            "loadUrl": "https://aihuangdou.com/drama/${id}/"
+          },
+          "playerContent": {
+            "loadUrl": "${url}"
+          },
+          "searchContent": {
+            "loadUrl": "https://aihuangdou.com/search/?q=${key}&page=${pg:-1}"
+          }
+        }
+      }
+    },
+    {
+      "key": "porncgw",
+      "name": "✨porn吃瓜",
+      "type": 3,
+      "quickSearch": 0,
+      "searchable": 1,
+      "changeable": 0,
+      "filterable": 0,
+      "timeout": 60,
+      "style": {
+        "type": "rect",
+        "ratio": 0.75
+      },
+      "api": "csp_GM",
+      "ext": {
+        "userScript": "./userScripts/porncgw.user.js",
+        "webViewSettings": {
+          "blockNetworkImage": false,
+          "blockCssAndFont": true,
+          "allowList": [
+            "https://*.wirqed.cn/*"
+          ]
+        },
+        "spider": {
+          "homeContent": {
+            "loadUrl": "https://porncgw.com/recommend/"
+          },
+          "categoryContent": {
+            "loadUrl": "https://porncgw.com/${tid}/${pg:-1}/"
+          },
+          "detailContent": {
+            "loadUrl": "https://porncgw.com/${id}/"
+          },
+          "playerContent": {
+            "loadUrl": "${url}"
+          },
+          "searchContent": {
+            "loadUrl": "https://porncgw.com/search/${key}/"
+          }
+        }
+      }
+    },
+    {
+      "key": "avple",
+      "name": "✨Avple",
+      "type": 3,
+      "quickSearch": 0,
+      "searchable": 1,
+      "changeable": 0,
+      "filterable": 0,
+      "timeout": 60,
+      "style": {
+        "type": "rect",
+        "ratio": 1.78
+      },
+      "api": "csp_GM",
+      "ext": {
+        "userScript": "./userScripts/avple.user.js",
+        "webViewSettings": {
+          "blockNetworkImage": true,
+          "blockCssAndFont": true
+        },
+        "spider": {
+          "homeContent": {
+            "loadUrl": "https://avple.tv/trend/daily/1"
+          },
+          "categoryContent": {
+            "loadUrl": "https://avple.tv/${tid}/${pg:-1}"
+          },
+          "detailContent": {
+            "loadUrl": "https://avple.tv/video/${id}"
+          },
+          "searchContent": {
+            "loadUrl": "https://avple.tv/search?key=${key}&page=${pg:-1}"
+          }
+        }
+      }
+    },
+    {
+      "key": "7MMTV",
+      "name": "✨7MMTV",
+      "type": 3,
+      "quickSearch": 1,
+      "searchable": 1,
+      "changeable": 0,
+      "filterable": 0,
+      "timeout": 60,
+      "style": {
+        "type": "rect",
+        "ratio": 1.49
+      },
+      "api": "csp_GM",
+      "ext": {
+        "userScript": "./userScripts/7mmtv.user.js",
+        "subtitle": true,
+        "webViewSettings": {
+          "blockNetworkImage": true,
+          "blockCssAndFont": true,
+          "allowList": [
+            "https://*mmsi*.com/*",
+            "https://*mmvh*.com/*",
+            "https://*playmogo.com/*",
+            "https://*streamsuperpro.com/*",
+            "https://*doodcdn.io/js/*",
+            "https://*doodcdn.io/ajax/*"
+          ]
+        },
+        "playUrlMatch": [
+          "*_,l,n,h,.urlset/master.m3u8*",
+          "*_,l,n,h,.urlset/master.txt*",
+          "*/stream/*/*/*/*/master.m3u8*",
+          "*streamsuperpro.com*/*.m3u8*",
+          "*?token=*&expiry=*"
+        ],
+        "spider": {
+          "homeContent": {
+            "loadUrl": "https://7mmtv.sx/zh/"
+          },
+          "categoryContent": {
+            "loadUrl": "https://7mmtv.sx/zh/${tid}/all/${pg:-1}.html"
+          },
+          "detailContent": {
+            "loadUrl": "https://7mmtv.sx${id}"
+          },
+          "searchContent": {
+            "loadUrl": "https://7mmtv.sx/zh/searchall_search/all/${key}/${pg:-1}.html"
+          }
+        }
+      }
+    },
+    {
       "key": "netflav",
       "name": "⛔NETFLAV",
       "type": 3,
